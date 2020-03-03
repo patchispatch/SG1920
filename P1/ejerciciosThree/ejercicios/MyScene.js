@@ -23,22 +23,24 @@ class MyScene extends THREE.Scene {
     // Tendremos una cámara con un control de movimiento con el ratón
     this.createCamera ();
     
-    // Un suelo 
-    this.createGround ();
-    
-    // Y unos ejes. Imprescindibles para orientarnos sobre dónde están las cosas
-    this.axis = new THREE.AxesHelper (5);
-    this.add (this.axis);
-    
-    
-    // Por último creamos el modelo.
-    // El modelo puede incluir su parte de la interfaz gráfica de usuario. Le pasamos la referencia a 
-    // la gui y el texto bajo el que se agruparán los controles de la interfaz que añada el modelo.
+    // La caja
     this.box1 = new MyBox(this.gui, "Controles de la Caja");
-    this.axis.add (this.box1);
+    this.add(this.box1);
 
+    // La esfera
     this.sphere1 = new MySphere(this.gui, "Controles de la Esfera");
     this.add(this.sphere1);
+
+    // Posiciones iniciales
+    this.initialPos();
+
+    //this.createGround();
+  }
+
+  // Establecer la posición inicial de las figuras en la escena
+  initialPos() {
+    this.sphere1.position.y = 5;
+    this.box1.position.y = -5;
   }
   
   createCamera () {
@@ -181,15 +183,14 @@ class MyScene extends THREE.Scene {
     this.spotLight.intensity = this.guiControls.lightIntensity;
     
     // Se muestran o no los ejes según lo que idique la GUI
-    this.axis.visible = this.guiControls.axisOnOff;
+    this.box1.axis.visible = this.guiControls.axisOnOff;
+    this.sphere1.axis.visible = this.guiControls.axisOnOff;
     
     // Se actualiza la posición de la cámara según su controlador
     this.cameraControl.update();
     
     // Se actualiza el resto del modelo
-    //this.box1.update();
-    this.box1.rotation.y += 0.01;
-    this.sphere1.rotation.y += 0.01;
+    this.box1.update();
     this.sphere1.update();
     
     // Le decimos al renderizador "visualiza la escena que te indico usando la cámara que te estoy pasando"
