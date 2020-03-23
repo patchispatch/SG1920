@@ -61,13 +61,14 @@ class MySphere extends THREE.Object3D {
         folder.add (this.guiControls, 'widthSegments', 4, 64, 4).name ('Segmentos verticales: ').listen();
         folder.add (this.guiControls, 'heightSegments', 4, 64, 4).name ('Segmentos horizontales: ').listen();
 
-        folder.add(this.guiControls, 'flatShading', )
+        folder.add(this.guiControls, 'flatShading').name('Sombreado plano');
         
         folder.add (this.guiControls, 'reset').name ('[ Reset ]');
     }
 
     update() {
         this.sphere.geometry = new THREE.SphereGeometry(1, this.guiControls.widthSegments, this.guiControls.heightSegments);
+        this.sphere.material = new THREE.MeshNormalMaterial({flatShading: this.guiControls.flatShading});
         this.sphere.scale.set(this.guiControls.sizeX,this.guiControls.sizeY,this.guiControls.sizeZ);
         this.sphere.rotateY(0.01);
     }

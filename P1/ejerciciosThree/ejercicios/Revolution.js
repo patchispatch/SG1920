@@ -1,4 +1,4 @@
- class MyBox extends THREE.Object3D {
+ class Revolution extends THREE.Object3D {
   constructor(gui,titleGui) {
     super();
     
@@ -7,16 +7,22 @@
     this.createGUI(gui,titleGui);
     
     // Un Mesh se compone de geometría y material
-    var boxGeom = new THREE.BoxGeometry (1,1,1);
+    this.points = [];
+    for(var i = 0; i < 10; ++i) {
+      this.points.push(new THREE.Vector2(Math.sin(i * 0.2) * 10 + 5, (i - 5) * 2));
+    }
+    var geometry = new THREE.LatheGeometry(this.points, 24, 0, Math.PI);
     // Como material se crea uno
-    var boxMat = new THREE.MeshNormalMaterial({
+    var material = new THREE.MeshNormalMaterial({
       flatShading: true,
+      side: THREE.DoubleSide,
     });
     
     // Ya podemos construir el Mesh
-    this.box = new THREE.Mesh (boxGeom, boxMat);
+    this.lathe = new THREE.Mesh (geometry, material);
+
     // Y añadirlo como hijo del Object3D (el this)
-    this.add(this.box);
+    this.add(this.lathe);
 
     // Ejes:
     this.axis = new THREE.AxesHelper(5);
@@ -26,16 +32,18 @@
   createGUI (gui,titleGui) {
     // Controles para el tamaño, la orientación y la posición de la caja
     this.guiControls = new function () {
-      this.sizeX = 1.0;
-      this.sizeY = 1.0;
-      this.sizeZ = 1.0;
+      this.scale = 1.0;
+      this.segments = 12;
+      this.phiStart = 0;
+      this.phiLength = 2*Math.PI;
       
       // Un botón para dejarlo todo en su posición inicial
       // Cuando se pulse se ejecutará esta función.
       this.reset = function () {
-        this.sizeX = 1.0;
-        this.sizeY = 1.0;
-        this.sizeZ = 1.0;
+        this.scale = 1.0;
+        this.segments = 12;
+        this.phiStart = 0;
+        this.phiLength = 2*Math.PI;
       }
     } 
     
@@ -44,10 +52,10 @@
     // Estas lineas son las que añaden los componentes de la interfaz
     // Las tres cifras indican un valor mínimo, un máximo y el incremento
     // El método   listen()   permite que si se cambia el valor de la variable en código, el deslizador de la interfaz se actualice
-    folder.add(this.guiControls, 'sizeX', 0.1, 5.0, 0.1).name('Tamaño X : ').listen();
-    folder.add(this.guiControls, 'sizeY', 0.1, 5.0, 0.1).name('Tamaño Y : ').listen();
-    folder.add(this.guiControls, 'sizeZ', 0.1, 5.0, 0.1).name('Tamaño Z : ').listen();
-  
+    folder.add(this.guiControls, 'scale', 0.1, 5.0, 0.1).name('Tamaño : ').listen();
+    folder.add(this.guiControls, 'segments', 2, 48, 1).name('Segmentos : ').listen();
+    folder.add(this.guiControls, 'phiStart', 0, 6, 1).name('phiStart : ').listen();
+    folder.add(this.guiControls, 'phiLength', 0, 2*Math.PI, 0.1).name('phiLength : ').listen(); 
     folder.add(this.guiControls, 'reset').name ('[ Reset ]');
   }
   
@@ -59,8 +67,8 @@
     // Luego, la rotación en X
     // Y por último la traslación
     //this.rotation.set (this.guiControls.rotX,this.guiControls.rotY,this.guiControls.rotZ);
-    this.box.scale.set(this.guiControls.sizeX,this.guiControls.sizeY,this.guiControls.sizeZ);
-
-    this.box.rotateY(0.01);
+    this.lathe.scale.set(this.guiControls.scale, this.guiControls.scale, this.guiControls.scale);
+    this.lathe.geometry = new THREE.LatheGeometry(this.points, this.guiControls.segments, this.guiControls.phiStart, this.guiControls.phiLength);
+    this.lathe.rotateY(0.01);
   }
 }

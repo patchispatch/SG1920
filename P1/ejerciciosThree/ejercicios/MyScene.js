@@ -31,6 +31,11 @@ class MyScene extends THREE.Scene {
     this.sphere1 = new MySphere(this.gui, "Controles de la Esfera");
     this.add(this.sphere1);
 
+    // El objeto revolución
+    this.rev = new Revolution(this.gui, "Controles revolución");
+    this.add(this.rev);
+    this.rev.scale.set(0.1, 0.1, 0.1);
+
     // Posiciones iniciales
     this.initialPos();
 
@@ -192,6 +197,7 @@ class MyScene extends THREE.Scene {
     // Se actualiza el resto del modelo
     this.box1.update();
     this.sphere1.update();
+    this.rev.update();
     
     // Le decimos al renderizador "visualiza la escena que te indico usando la cámara que te estoy pasando"
     this.renderer.render (this, this.getCamera());
