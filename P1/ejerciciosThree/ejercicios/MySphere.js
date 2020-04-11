@@ -68,7 +68,8 @@ class MySphere extends THREE.Object3D {
 
     update() {
         this.sphere.geometry = new THREE.SphereGeometry(1, this.guiControls.widthSegments, this.guiControls.heightSegments);
-        this.sphere.material = new THREE.MeshNormalMaterial({flatShading: this.guiControls.flatShading});
+        this.sphere.material.flatShading = this.guiControls.flatShading;
+        this.sphere.material.needsUpdate = true;
         this.sphere.scale.set(this.guiControls.sizeX,this.guiControls.sizeY,this.guiControls.sizeZ);
         this.sphere.rotateY(0.01);
     }

@@ -36,6 +36,10 @@ class MyScene extends THREE.Scene {
     this.add(this.rev);
     this.rev.scale.set(0.1, 0.1, 0.1);
 
+    // Objeto de barrido:
+    this.heart = new HeartShape(this.gui, "Controles del corazón");
+    this.add(this.heart);
+
     // Posiciones iniciales
     this.initialPos();
 
@@ -198,6 +202,7 @@ class MyScene extends THREE.Scene {
     this.box1.update();
     this.sphere1.update();
     this.rev.update();
+    this.heart.update();
     
     // Le decimos al renderizador "visualiza la escena que te indico usando la cámara que te estoy pasando"
     this.renderer.render (this, this.getCamera());
