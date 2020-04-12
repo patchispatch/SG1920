@@ -37,7 +37,7 @@ class MyScene extends THREE.Scene {
     this.rev.scale.set(0.1, 0.1, 0.1);
 
     // Objeto de barrido:
-    this.heart = new HeartShape(this.gui, "Controles del corazón");
+    this.heart = new SquareShape(this.gui, "Controles del corazón");
     this.add(this.heart);
 
     // Posiciones iniciales
