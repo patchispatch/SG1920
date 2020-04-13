@@ -20,8 +20,8 @@ class MyScene extends THREE.Scene {
     this.createCamera();
 
     // Crear geometrías y mesh
-    this.dice = new Dice(this.gui, "Controles del dado");
-    this.add(this.dice);
+    this.cup = new Cup(this.gui, "Controles del dado");
+    this.add(this.cup);
 
     // Posiciones iniciales
     this.initialPos();
@@ -174,13 +174,13 @@ class MyScene extends THREE.Scene {
     this.spotLight.intensity = this.guiControls.lightIntensity;
     
     // Se muestran o no los ejes según lo que idique la GUI
-    this.dice.axis.visible = this.guiControls.axisOnOff;
+    this.cup.axis.visible = this.guiControls.axisOnOff;
     
     // Se actualiza la posición de la cámara según su controlador
     this.cameraControl.update();
     
     // Se actualiza el resto del modelo
-    this.dice.update();
+    this.cup.update();
     
     // Le decimos al renderizador "visualiza la escena que te indico usando la cámara que te estoy pasando"
     this.renderer.render (this, this.getCamera());

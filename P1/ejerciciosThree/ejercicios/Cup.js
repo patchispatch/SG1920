@@ -9,19 +9,30 @@ class Cup extends THREE.Object3D {
         // Geometrías de la taza:
         var cylinder1 = new THREE.CylinderGeometry(3.3, 3, 8, 32);
         var cylinder2 = new THREE.CylinderGeometry(2.3, 2, 8, 32);
-        var torus = new THREE.TorusGeometry(2, 0.4, 16, 100);
+        var torus1 = new THREE.TorusGeometry(2, 0.4, 16, 100);
 
+        // Movemos las geometrías a su lugar correspondiente
+        cylinder2.translate(0, -0.5, 0);
+        torus1.translate(-3, 0, 0);
+
+        // Creamos las geometrías BSP
         var c1 = new ThreeBSP(cylinder1);
         var c2 = new ThreeBSP(cylinder2);
         var t1 = new ThreeBSP(torus1);
-        
+
+        // Realizamos las operaciones booleanas para construir la taza
+        var c3 = c1.union(t1);
+        var cupG = c3.subtract(c2);
+
+        // Creamos el mesh con el material y la geometría
         var material = new THREE.MeshNormalMaterial({
             flatShading: true,
         });
-        
-        this.dice = diceGeom.toMesh(diceMat);
-        this.dice.geometry.computeVertexNormals();
-        this.add(this.dice);
+        this.cup = cupG.toMesh(material);
+        this.cup.geometry.computeVertexNormals();
+
+        // Finalmente se añade a la escena
+        this.add(this.cup);
 
         // Ejes:
         this.axis = new THREE.AxesHelper(5);
