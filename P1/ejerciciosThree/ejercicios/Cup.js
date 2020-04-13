@@ -7,12 +7,12 @@ class Cup extends THREE.Object3D {
         this.createGUI(gui,titleGui);
         
         // Geometrías de la taza:
-        var cylinder1 = new THREE.CylinderGeometry(3.3, 3, 8, 32);
-        var cylinder2 = new THREE.CylinderGeometry(2.3, 2, 8, 32);
-        var torus1 = new THREE.TorusGeometry(2, 0.4, 16, 100);
+        var cylinder1 = new THREE.CylinderGeometry(3, 2, 8, 32);
+        var cylinder2 = new THREE.CylinderGeometry(2.5, 1.8, 8, 32);
+        var torus1 = new THREE.TorusGeometry(2, 0.4, 16, 50);
 
         // Movemos las geometrías a su lugar correspondiente
-        cylinder2.translate(0, -0.5, 0);
+        cylinder2.translate(0, 0.5, 0);
         torus1.translate(-3, 0, 0);
 
         // Creamos las geometrías BSP
@@ -43,11 +43,13 @@ class Cup extends THREE.Object3D {
         // Controles para el tamaño, la orientación y la posición de la caja
         this.guiControls = new function () {
             this.animate = false;
+            this.flatShading = true;
             
             // Un botón para dejarlo todo en su posición inicial
             // Cuando se pulse se ejecutará esta función.
             this.reset = function () {
-            this.animate = false;
+                this.animate = false;
+                this.flatShading = true;
             }
         } 
         
@@ -57,15 +59,25 @@ class Cup extends THREE.Object3D {
         // Las tres cifras indican un valor mínimo, un máximo y el incremento
         // El método   listen()   permite que si se cambia el valor de la variable en código, el deslizador de la interfaz se actualice
         folder.add(this.guiControls, 'animate').name("Animaciones");
+        folder.add(this.guiControls, 'flatShading').name("Sombreado plano");
     }
     
     animate() {
-        this.square.rotateX(0.01);
-        this.square.rotateY(0.01);
-        this.square.rotateZ(0.01);
+        this.cup.rotateX(0.01);
+        this.cup.rotateY(0.01);
+        this.cup.rotateZ(0.01);
     }
 
     update () {
+        // Sombreado
+        if(this.guiControls.flatShading != this.cup.material.flatShading) {
+            this.cup.material.flatShading = this.guiControls.flatShading;
+            this.cup.material.needsUpdate = true;
+        }
+        else {
+            this.cup.material.needsUpdate = false;
+        }
+
         // Animaciones
         if(this.guiControls.animations) {
             this.animate();
