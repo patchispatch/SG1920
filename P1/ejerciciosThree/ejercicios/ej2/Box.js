@@ -1,4 +1,4 @@
- class MyBox extends THREE.Object3D {
+ class Box extends THREE.Object3D {
   constructor(gui,titleGui) {
     super();
     

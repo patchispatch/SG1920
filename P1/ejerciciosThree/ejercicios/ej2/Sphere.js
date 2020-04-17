@@ -1,4 +1,4 @@
-class MySphere extends THREE.Object3D {
+class Sphere extends THREE.Object3D {
     // Constructor de la esfera
     constructor (gui, titleGui) {
         super();

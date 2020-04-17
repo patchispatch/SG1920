@@ -4,7 +4,7 @@
  * Usaremos una clase derivada de la clase Scene de Three.js para llevar el control de la escena y de todo lo que ocurre en ella.
  */
 
-class MyScene extends THREE.Scene {
+class Ejercicio2 extends THREE.Scene {
   constructor (myCanvas) {
     super();
     
@@ -24,21 +24,12 @@ class MyScene extends THREE.Scene {
     this.createCamera ();
     
     // La caja
-    this.box1 = new MyBox(this.gui, "Controles de la Caja");
+    this.box1 = new Box(this.gui, "Controles de la Caja");
     this.add(this.box1);
 
     // La esfera
-    this.sphere1 = new MySphere(this.gui, "Controles de la Esfera");
+    this.sphere1 = new Sphere(this.gui, "Controles de la Esfera");
     this.add(this.sphere1);
-
-    // El objeto revolución
-    this.rev = new Revolution(this.gui, "Controles revolución");
-    this.add(this.rev);
-    this.rev.scale.set(0.1, 0.1, 0.1);
-
-    // Objeto de barrido:
-    this.heart = new SquareShape(this.gui, "Controles del corazón");
-    this.add(this.heart);
 
     // Posiciones iniciales
     this.initialPos();
@@ -201,8 +192,6 @@ class MyScene extends THREE.Scene {
     // Se actualiza el resto del modelo
     this.box1.update();
     this.sphere1.update();
-    this.rev.update();
-    this.heart.update();
     
     // Le decimos al renderizador "visualiza la escena que te indico usando la cámara que te estoy pasando"
     this.renderer.render (this, this.getCamera());
@@ -213,7 +202,7 @@ class MyScene extends THREE.Scene {
 $(function () {
   
   // Se instancia la escena pasándole el  div  que se ha creado en el html para visualizar
-  var scene = new MyScene("#WebGL-output");
+  var scene = new Ejercicio2("#WebGL-output");
 
   // Se añaden los listener de la aplicación. En este caso, el que va a comprobar cuándo se modifica el tamaño de la ventana de la aplicación.
   window.addEventListener ("resize", () => scene.onWindowResize());
