@@ -4,7 +4,7 @@
  * Usaremos una clase derivada de la clase Scene de Three.js para llevar el control de la escena y de todo lo que ocurre en ella.
  */
 
-class Ejercicio2 extends THREE.Scene {
+class Scene extends THREE.Scene {
   constructor (myCanvas) {
     super();
     
@@ -24,12 +24,8 @@ class Ejercicio2 extends THREE.Scene {
     this.createCamera ();
     
     // La caja
-    this.box1 = new Box(this.gui, "Controles de la Caja");
-    this.add(this.box1);
-
-    // La esfera
-    this.sphere1 = new Sphere(this.gui, "Controles de la Esfera");
-    this.add(this.sphere1);
+    this.rev = new Revolution(this.gui, "Controles de la Caja");
+    this.add(this.rev);
 
     // Posiciones iniciales
     this.initialPos();
@@ -39,8 +35,7 @@ class Ejercicio2 extends THREE.Scene {
 
   // Establecer la posición inicial de las figuras en la escena
   initialPos() {
-    this.sphere1.position.y = 5;
-    this.box1.position.y = -5;
+
   }
   
   createCamera () {
@@ -183,15 +178,13 @@ class Ejercicio2 extends THREE.Scene {
     this.spotLight.intensity = this.guiControls.lightIntensity;
     
     // Se muestran o no los ejes según lo que idique la GUI
-    this.box1.axis.visible = this.guiControls.axisOnOff;
-    this.sphere1.axis.visible = this.guiControls.axisOnOff;
+    this.rev.axis.visible = this.guiControls.axisOnOff;
     
     // Se actualiza la posición de la cámara según su controlador
     this.cameraControl.update();
     
     // Se actualiza el resto del modelo
-    this.box1.update();
-    this.sphere1.update();
+    this.rev.update();
     
     // Le decimos al renderizador "visualiza la escena que te indico usando la cámara que te estoy pasando"
     this.renderer.render (this, this.getCamera());
@@ -202,7 +195,7 @@ class Ejercicio2 extends THREE.Scene {
 $(function () {
   
   // Se instancia la escena pasándole el  div  que se ha creado en el html para visualizar
-  var scene = new Ejercicio2("#WebGL-output");
+  var scene = new Scene("#WebGL-output");
 
   // Se añaden los listener de la aplicación. En este caso, el que va a comprobar cuándo se modifica el tamaño de la ventana de la aplicación.
   window.addEventListener ("resize", () => scene.onWindowResize());
