@@ -1,6 +1,6 @@
 // Ejercicio 5: CSG
 
-class MyScene extends THREE.Scene {
+class Scene extends THREE.Scene {
   constructor (myCanvas) {
     super();
     
@@ -20,8 +20,11 @@ class MyScene extends THREE.Scene {
     this.createCamera();
 
     // Crear geometrías y mesh
-    this.cup = new Cup(this.gui, "Controles del dado");
-    this.add(this.cup);
+    this.square = new SquareShape(this.gui, "Controles de extrusión");
+    this.add(this.square);
+
+    this.heart = new Heart(this.gui, "Controles del corazón");
+    this.add(this.heart);
 
     // Posiciones iniciales
     this.initialPos();
@@ -31,7 +34,8 @@ class MyScene extends THREE.Scene {
 
   // Establecer la posición inicial de las figuras en la escena
   initialPos() {
-
+    this.square.position.x = -20;
+    this.heart.position.x = 10;
   }
   
   createCamera () {
@@ -174,13 +178,14 @@ class MyScene extends THREE.Scene {
     this.spotLight.intensity = this.guiControls.lightIntensity;
     
     // Se muestran o no los ejes según lo que idique la GUI
-    this.cup.axis.visible = this.guiControls.axisOnOff;
+    this.square.axis.visible = this.guiControls.axisOnOff;
     
     // Se actualiza la posición de la cámara según su controlador
     this.cameraControl.update();
     
     // Se actualiza el resto del modelo
-    this.cup.update();
+    this.square.update();
+    this.heart.update();
     
     // Le decimos al renderizador "visualiza la escena que te indico usando la cámara que te estoy pasando"
     this.renderer.render (this, this.getCamera());
@@ -191,7 +196,7 @@ class MyScene extends THREE.Scene {
 $(function () {
   
   // Se instancia la escena pasándole el  div  que se ha creado en el html para visualizar
-  var scene = new MyScene("#WebGL-output");
+  var scene = new Scene("#WebGL-output");
 
   // Se añaden los listener de la aplicación. En este caso, el que va a comprobar cuándo se modifica el tamaño de la ventana de la aplicación.
   window.addEventListener ("resize", () => scene.onWindowResize());

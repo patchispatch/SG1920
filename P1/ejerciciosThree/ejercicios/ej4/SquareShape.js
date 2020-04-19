@@ -13,21 +13,20 @@ class SquareShape extends THREE.Object3D {
 
         // Mesh de la forma
         var pts = [
-            new THREE.Vector3(0, -20, 0),
-            new THREE.Vector3(20, 0, 0),
-            new THREE.Vector3(0, 20, 0),
-            new THREE.Vector3(-20, 0, 0),
+            new THREE.Vector3(0, -2, 0),
+            new THREE.Vector3(2, 0, 0),
+            new THREE.Vector3(0, 2, 0),
+            new THREE.Vector3(-2, 0, 0),
         ];
 
         var SquareShape = new THREE.Shape(pts);
 
-
         // Curva de extrusión
         var curve = new THREE.CatmullRomCurve3 ([
-            new THREE.Vector3(0, 0, 100),
-            new THREE.Vector3(100, 0, 200),
-            new THREE.Vector3(0, 0, 300),
-            new THREE.Vector3(-100, 0, 400),
+            new THREE.Vector3(0, 0, 0),
+            new THREE.Vector3(5, 0, 5),
+            new THREE.Vector3(-5, 0, 10),
+            new THREE.Vector3(0, 0, 15),
         ]);
 
         var extrudeSettings = { 
