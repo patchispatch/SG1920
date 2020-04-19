@@ -1,6 +1,6 @@
 // Ejercicio 5: CSG
 
-class MyScene extends THREE.Scene {
+class Scene extends THREE.Scene {
     constructor (myCanvas) {
         super();
         
@@ -11,6 +11,8 @@ class MyScene extends THREE.Scene {
         this.gui = this.createGUI();
         
         // Construimos los distinos elementos que tendremos en la escena
+        this.model = new Car(this.gui, "Controles del plátano");
+        this.add(this.model);
         
         // Todo elemento que se desee sea tenido en cuenta en el renderizado de la escena debe pertenecer a esta. Bien como hijo de la escena (this en esta clase) o como hijo de un elemento que ya esté en la escena.
         // Tras crear cada elemento se añadirá a la escena con   this.add(variable)
@@ -176,7 +178,7 @@ class MyScene extends THREE.Scene {
         this.cameraControl.update();
         
         // Se actualiza el resto del modelo
-        //this.cup.update();
+        this.model.update();
         
         // Le decimos al renderizador "visualiza la escena que te indico usando la cámara que te estoy pasando"
         this.renderer.render (this, this.getCamera());
@@ -186,35 +188,10 @@ class MyScene extends THREE.Scene {
 /// La función   main
 $(function () {
     // Se instancia la escena pasándole el  div  que se ha creado en el html para visualizar
-    var scene = new MyScene("#WebGL-output");
+    var scene = new Scene("#WebGL-output");
 
     // Se añaden los listener de la aplicación. En este caso, el que va a comprobar cuándo se modifica el tamaño de la ventana de la aplicación.
     window.addEventListener ("resize", () => scene.onWindowResize());
-
-    // Cargar modelo .obj
-    var loader = new THREE.OBJLoader();
-
-    // load a resource
-    loader.load(
-        // resource URL
-        '../models/platano/banana.obj',
-        // called when resource is loaded
-        function ( platano ) {
-            var texture = new THREE.TextureLoader().load("../models/platano/Banana skin texture.jpg");
-            platano.material = new THREE.MeshPhongMaterial({map: texture});
-            scene.add(platano);
-        },
-        // called when loading is in progresses
-        function ( xhr ) {
-            console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
-        },
-        // called when loading has errors
-        function ( error ) {
-            console.log( 'An error happened' );
-        }
-    );
-
-
 
     // Que no se nos olvide, la primera visualización.
     scene.update();
