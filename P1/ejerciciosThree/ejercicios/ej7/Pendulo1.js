@@ -14,7 +14,7 @@ class Pendulo1 extends THREE.Object3D {
         // de dimensiones 4x4x4, y un prisma rojo de escala en Y 
         // variable.
         var boxGeom = new THREE.BoxGeometry(4, 4, 4);
-        var prismGeom = new THREE.BoxGeometry(4, this.red_h, 4);
+        var prismGeom = new THREE.BoxGeometry(4, this.redH, 4);
 
         var greenMat = new THREE.MeshPhongMaterial({color: 0x3bce60});
         var redMat = new THREE.MeshPhongMaterial({color: 0xe84a4a});
@@ -28,13 +28,13 @@ class Pendulo1 extends THREE.Object3D {
         // en el origen.
         // redBox debe desplazarse en Y justo debajo, la mitad de la altura de 
         // box1
-        this.redBox.position.y = -2;
+        this.redBox.position.y = -this.redH/2 - 2;
 
         // La longitud en y de redBox es variable según la GUI
         this.redBox.scale.y = this.guiControls.redScale;
 
         // box3 debe situarse justo debajo de las dos figuras anteriores
-        this.box3.position.y = -2 - this.guiControls.redScale * this.redH;
+        this.box3.position.y = -4 - this.guiControls.redScale * this.redH;
 
         // Añadimos las figuras a la escena
         this.add(this.box1);
@@ -56,13 +56,14 @@ class Pendulo1 extends THREE.Object3D {
 
         var folder = gui.addFolder(titleGui);
         folder.add(this.guiControls, 'rotation', -Math.PI, Math.PI, 0.1).name('Rotación').listen();
-        folder.add(this.guiControls, 'redScale', 5.0, 10.0, 0.2).name('Longitud del segmento rojo').listen();
+        folder.add(this.guiControls, 'redScale', 1.0, 2.0, 0.2).name('Longitud del segmento rojo').listen();
         folder.add (this.guiControls, 'reset').name ('[ Reset ]');
     }
 
     update() {
         this.redBox.scale.y = this.guiControls.redScale;
-        this.box3.position.y = -2 - this.guiControls.redScale * this.redH;
+        this.redBox.position.y = -2 -(this.redH * this.guiControls.redScale)/2;
+        this.box3.position.y = -4 - this.guiControls.redScale * this.redH;
         this.rotation.z = this.guiControls.rotation;
     }
 }
