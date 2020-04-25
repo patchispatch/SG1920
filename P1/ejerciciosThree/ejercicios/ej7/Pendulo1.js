@@ -16,12 +16,12 @@ class Pendulo1 extends THREE.Object3D {
         // variable.
         var boxGeom = new THREE.BoxGeometry(4, 4, 4);
         var prismGeom = new THREE.BoxGeometry(4, this.redH, 4);
-        var p2Geom = new THREE.BoxGeometry(4, this.blueH, 2);
+
 
         // Materiales
         var greenMat = new THREE.MeshPhongMaterial({color: 0x3bce60});
         var redMat = new THREE.MeshPhongMaterial({color: 0xe84a4a});
-        var blueMat = new THREE.MeshPhongMaterial({color: 0x6891e3});
+
 
         // Péndulo 1
         this.box1 = new THREE.Mesh(boxGeom, greenMat);
@@ -29,8 +29,8 @@ class Pendulo1 extends THREE.Object3D {
         this.box2 = new THREE.Mesh(boxGeom, greenMat);
 
         // Péndulo 2
-        this.blueBox = new THREE.Mesh(p2Geom, blueMat);
-        this.p2 = new THREE.Object3D();
+
+        this.p2 = new Pendulo2(this.blueH);
 
         
         // Posición y jerarquía de los elementos
@@ -46,14 +46,8 @@ class Pendulo1 extends THREE.Object3D {
         // box2 debe situarse justo debajo de las dos figuras anteriores
         this.box2.position.y = -4 - this.guiControls.redScale * this.redH;
 
-        // blueBox se encuentra en el lateral del péndulo 1
-        // Inicialmente "cuelga" de la mitad del segmento rojo
-        this.blueBox.position.z = 3;
-        this.blueBox.position.y = -this.blueH/2 + 1;
-
         // Añadimos las figuras a la escena
         this.add(this.box1);
-        this.p2.add(this.blueBox);
         this.add(this.p2);
         this.add(this.redBox);
         this.add(this.box2);
@@ -94,9 +88,11 @@ class Pendulo1 extends THREE.Object3D {
         this.box2.position.y = -4 - this.guiControls.redScale * this.redH;
         this.rotation.z = this.guiControls.p1Rotation;
 
-        this.p2.scale.y = this.guiControls.blueScale;
+        this.p2.setHeight(this.guiControls.blueScale);
         this.p2.rotation.z = this.guiControls.p2Rotation;
         this.p2.position.y = -2 - (this.redH * this.guiControls.redScale)/2 +
             this.guiControls.p2Pos * this.redH * this.guiControls.redScale;
+
+        this.p2.update();   
     }
 }
