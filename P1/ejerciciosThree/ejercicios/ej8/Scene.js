@@ -24,7 +24,7 @@ class Scene extends THREE.Scene {
         // Posiciones iniciales
         this.initialPos();
     
-        //this.createGround();
+        this.createGround();
     }
   
     // Establecer la posición inicial de las figuras en la escena
@@ -62,7 +62,7 @@ class Scene extends THREE.Scene {
         var geometryGround = new THREE.BoxGeometry (50,0.2,50);
         
         // El material se hará con una textura de madera
-        var texture = new THREE.TextureLoader().load('../imgs/wood.jpg');
+        var texture = new THREE.TextureLoader().load('../../imgs/wood.jpg');
         var materialGround = new THREE.MeshPhongMaterial ({map: texture});
         
         // Ya se puede construir el Mesh
