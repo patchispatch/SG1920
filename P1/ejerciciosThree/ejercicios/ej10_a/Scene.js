@@ -41,6 +41,27 @@ class Scene extends THREE.Scene {
         });
         this.add(this.toUpdate['sat1']);
 
+        // Sat2
+        this.toUpdate['sat2'] = new Satellite(this.gui, "Controles de Sat2", {
+            satRadius: 1,
+            orbitRadius: 12,
+            rotationSpeed: -1,
+            translationSpeed: 1,
+            initialRotation: -Math.PI/4,
+            material: new THREE.MeshBasicMaterial({map: cara}),
+        });
+        this.add(this.toUpdate['sat2']);
+
+        // Sat3
+        this.toUpdate['sat3'] = new Satellite(this.gui, "Controles de Sat3", {
+            satRadius: 1,
+            orbitRadius: 16,
+            rotationSpeed: -2,
+            translationSpeed: 1,
+            initialRotation: -Math.PI/4,
+            material: new THREE.MeshBasicMaterial({map: cara}),
+        });
+        this.add(this.toUpdate['sat3']);
 
         
         // Todo elemento que se desee sea tenido en cuenta en el renderizado de la escena debe pertenecer a esta. Bien como hijo de la escena (this en esta clase) o como hijo de un elemento que ya esté en la escena.
