@@ -15,11 +15,33 @@ class Scene extends THREE.Scene {
         this.gui = this.createGUI();
         
         // Construimos los distintos elementos que tendremos en la escena
-        this.toUpdate['S1'] = new Satellite(this.gui, "Controles de S1", {
-            satRadius: 5,
-            material: new THREE.MeshPhongMaterial({color: 0xff1453}),
+
+        // Texturas
+        var tierra = new THREE.TextureLoader().load('../../imgs/tierra.jpg');
+        var cara = new THREE.TextureLoader().load('../../imgs/cara.jpg');
+
+        // Tierra
+        this.toUpdate['tierra'] = new Satellite(this.gui, "Controles de la tierra", {
+            satRadius: 3,
+            orbitRadius: 0,
+            rotationSpeed: 1,
+            initialRotation: 8 * Math.PI/6,
+            material: new THREE.MeshBasicMaterial({map: tierra}),
         });
-        this.add(this.toUpdate['S1']);
+        this.add(this.toUpdate['tierra']);
+
+        // Sat1
+        this.toUpdate['sat1'] = new Satellite(this.gui, "Controles de Sat1", {
+            satRadius: 1,
+            orbitRadius: 8,
+            rotationSpeed: 0,
+            translationSpeed: 1,
+            initialRotation: Math.PI/2,
+            material: new THREE.MeshBasicMaterial({map: cara}),
+        });
+        this.add(this.toUpdate['sat1']);
+
+
         
         // Todo elemento que se desee sea tenido en cuenta en el renderizado de la escena debe pertenecer a esta. Bien como hijo de la escena (this en esta clase) o como hijo de un elemento que ya esté en la escena.
         // Tras crear cada elemento se añadirá a la escena con   this.add(variable)
@@ -185,9 +207,15 @@ class Scene extends THREE.Scene {
         this.cameraControl.update();
         
         // Se actualiza el resto del modelo
-        for (let obj of this.toUpdate) {
-            obj.update();
+        let time = Date.now();
+        let deltaTime = time - this.pTime;
+
+        for (let obj in this.toUpdate) {
+            this.toUpdate[obj].update(deltaTime);
         }
+
+        // Actualizar tiempo
+        this.pTime = time;
         
         // Le decimos al renderizador "visualiza la escena que te indico usando la cámara que te estoy pasando"
         this.renderer.render (this, this.getCamera());
