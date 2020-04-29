@@ -1,5 +1,3 @@
-// Ejercicio 5: CSG
-
 class Scene extends THREE.Scene {
     constructor (myCanvas) {
         super();
@@ -17,7 +15,7 @@ class Scene extends THREE.Scene {
         // Construimos los distintos elementos que tendremos en la escena
 
         // Tierra
-        this.toUpdate['obj'] = new Cilindrosfera();
+        this.toUpdate['obj'] = new Cilindrosfera(this.gui, 'Controles');
         this.add(this.toUpdate['obj']);
         
         // Todo elemento que se desee sea tenido en cuenta en el renderizado de la escena debe pertenecer a esta. Bien como hijo de la escena (this en esta clase) o como hijo de un elemento que ya esté en la escena.

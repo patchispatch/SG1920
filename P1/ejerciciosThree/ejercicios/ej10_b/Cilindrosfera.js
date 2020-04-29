@@ -1,8 +1,11 @@
 class Cilindrosfera extends THREE.Object3D {
     
     // Constructor
-    constructor(obj) {
+    constructor(gui, titleGui, obj) {
         super();
+
+        // Crear GUI
+        this.createGui(gui, titleGui)
 
         // Atributos de la clase
         this.rotationSpeed = 1;
@@ -43,6 +46,30 @@ class Cilindrosfera extends THREE.Object3D {
         this.add(this.cyl);
     }
 
+    createGui(gui, titleGui) {
+        this.guiControls = new function() {
+            this.radius = 5;
+
+            this.reset = function() {
+                this.radius = 5;
+            }
+        }
+
+        var folder = gui.addFolder(titleGui);
+        folder.add(this.guiControls, 'radius', 5, 20, 1).name('Radio del cilindro').listen();
+        folder.add(this.guiControls, 'reset').name('[ Reset ]');
+    }
+
+    // Actualizar el radio de rotación con el del cilindro
+    updateRadius() {
+        // Actualizar rotación de la esfera
+        this.sphere.position.z = this.guiControls.radius;
+
+        // Actualizar radio del cilindro
+        this.cylinderRadius = this.guiControls.radius;
+        this.cyl.geometry = new THREE.CylinderBufferGeometry(this.cylinderRadius, this.cylinderRadius, this.cylinderHeight, 32);
+    }
+
     // Animación del satélite: rotación
     animate(frac) {
         // Rotación
@@ -62,6 +89,11 @@ class Cilindrosfera extends THREE.Object3D {
     }
 
     update(deltaTime) {
+        // Si se ha cambiado el radio, actualizar
+        if(this.guiControls.radius != this.cylinderRadius) {
+            this.updateRadius();
+        }
+
         // Fracción de segundos pasados
         let frac = deltaTime / 1000;
         this.animate(frac);
