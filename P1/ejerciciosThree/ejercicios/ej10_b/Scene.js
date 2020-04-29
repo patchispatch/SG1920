@@ -16,53 +16,9 @@ class Scene extends THREE.Scene {
         
         // Construimos los distintos elementos que tendremos en la escena
 
-        // Texturas
-        var tierra = new THREE.TextureLoader().load('../../imgs/tierra.jpg');
-        var cara = new THREE.TextureLoader().load('../../imgs/cara.jpg');
-
         // Tierra
-        this.toUpdate['tierra'] = new Satellite({
-            satRadius: 3,
-            orbitRadius: 0,
-            rotationSpeed: 1,
-            initialRotation: 8 * Math.PI/6,
-            material: new THREE.MeshBasicMaterial({map: tierra}),
-        });
-        this.add(this.toUpdate['tierra']);
-
-        // Sat1
-        this.toUpdate['sat1'] = new Satellite({
-            satRadius: 1,
-            orbitRadius: 8,
-            rotationSpeed: 0,
-            translationSpeed: 1,
-            initialRotation: Math.PI/2,
-            material: new THREE.MeshBasicMaterial({map: cara}),
-        });
-        this.add(this.toUpdate['sat1']);
-
-        // Sat2
-        this.toUpdate['sat2'] = new Satellite({
-            satRadius: 1,
-            orbitRadius: 12,
-            rotationSpeed: -1,
-            translationSpeed: 1,
-            initialRotation: -Math.PI/4,
-            material: new THREE.MeshBasicMaterial({map: cara}),
-        });
-        this.add(this.toUpdate['sat2']);
-
-        // Sat3
-        this.toUpdate['sat3'] = new Satellite({
-            satRadius: 1,
-            orbitRadius: 16,
-            rotationSpeed: -2,
-            translationSpeed: 1,
-            initialRotation: -Math.PI/4,
-            material: new THREE.MeshBasicMaterial({map: cara}),
-        });
-        this.add(this.toUpdate['sat3']);
-
+        this.toUpdate['obj'] = new Cilindrosfera();
+        this.add(this.toUpdate['obj']);
         
         // Todo elemento que se desee sea tenido en cuenta en el renderizado de la escena debe pertenecer a esta. Bien como hijo de la escena (this en esta clase) o como hijo de un elemento que ya esté en la escena.
         // Tras crear cada elemento se añadirá a la escena con   this.add(variable)

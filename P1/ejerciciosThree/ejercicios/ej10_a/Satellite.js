@@ -1,7 +1,7 @@
 class Satellite extends THREE.Object3D {
     
     // Constructor
-    constructor(gui, titleGui, obj) {
+    constructor(obj) {
         super();
 
         // Atributos de la clase
@@ -19,9 +19,6 @@ class Satellite extends THREE.Object3D {
                 }
             }
         }
-
-        // Interfaz
-        this.createGui(gui, titleGui);
 
         // Satélite
         var satG = new THREE.SphereBufferGeometry(this.satRadius, 32, 32);
@@ -42,20 +39,6 @@ class Satellite extends THREE.Object3D {
         else {
             this.add(this.sat);
         }
-    }
-
-    createGui(gui, titleGui) {
-        // Controles de giro y escala para el péndulo 1:
-        this.guiControls = new function() {
-            this.noSirve = true;
-
-            this.reset = function() {
-                this.noSirve = true;
-            }
-        }
-
-        var folder = gui.addFolder(titleGui);
-        folder.add (this.guiControls, 'reset').name ('[ Reset ]');
     }
 
     // Animación del satélite: rotación
