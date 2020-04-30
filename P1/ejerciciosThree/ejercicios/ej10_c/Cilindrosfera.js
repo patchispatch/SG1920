@@ -114,6 +114,6 @@ class Cilindrosfera extends THREE.Object3D {
         }
         */
 
-        //this.animate();
+        this.animate();
     }
 }
