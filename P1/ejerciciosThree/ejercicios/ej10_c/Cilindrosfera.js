@@ -36,16 +36,10 @@ class Cilindrosfera extends THREE.Object3D {
         this.sphere = new THREE.Mesh(sphereG, this.sphereMaterial);
 
         // Cilindro elíptico
-        //this.curve = new THREE.EllipseCurve(0, 0, this.xRadius, this.yRadius);
-        
-        this.curve = new THREE.CatmullRomCurve3( [
-            new THREE.Vector3( -10, 0, 10 ),
-            new THREE.Vector3( -5, 5, 5 ),
-            new THREE.Vector3( 0, 0, 0 ),
-            new THREE.Vector3( 5, -5, 5 ),
-            new THREE.Vector3( 10, 0, 10 )
-        ] );
-        let points = this.curve.getPoints(100);
+        let ellipse = new THREE.EllipseCurve(0, 0, this.xRadius, this.yRadius);
+        let points = ellipse.getPoints(100);
+        console.log();
+        this.curve = new THREE.CatmullRomCurve3(points);
         let shape = new THREE.Shape(points);
 
         let settings = {
@@ -120,6 +114,6 @@ class Cilindrosfera extends THREE.Object3D {
         }
         */
 
-        this.animate();
+        //this.animate();
     }
 }
