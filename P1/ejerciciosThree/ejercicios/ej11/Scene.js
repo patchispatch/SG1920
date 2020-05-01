@@ -3,7 +3,7 @@ class Scene extends THREE.Scene {
         super();
 
         // Variables de animación
-        this.toUpdate = [];
+        this.objects = [];
         
         // Lo primero, crear el visualizador, pasándole el lienzo sobre el que realizar los renderizados.
         this.renderer = this.createRenderer(myCanvas);
@@ -18,8 +18,8 @@ class Scene extends THREE.Scene {
         this.add(this.axis);
 
         // Objetos
-        this.toUpdate['obj'] = new Road();
-        this.add(this.toUpdate['obj']);
+        this.objects['obj'] = new Road();
+        this.add(this.objects['obj']);
 
 
         
@@ -187,9 +187,12 @@ class Scene extends THREE.Scene {
         this.cameraControl.update();
         
         // Se actualiza el resto del modelo
+        /*
         for (let obj in this.toUpdate) {
             this.toUpdate[obj].update();
         }
+        */
+       TWEEN.update();
         
         // Le decimos al renderizador "visualiza la escena que te indico usando la cámara que te estoy pasando"
         this.renderer.render (this, this.getCamera());
