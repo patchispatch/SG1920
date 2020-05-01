@@ -37,10 +37,14 @@ class Cilindrosfera extends THREE.Object3D {
 
         // Cilindro elíptico
         let ellipse = new THREE.EllipseCurve(0, 0, this.xRadius, this.yRadius);
-        let points = ellipse.getPoints(100);
-        console.log();
+
+        let points = [];
+        for(let p of ellipse.getPoints(100)) {
+            points.push(new THREE.Vector3(p.x, 0, p.y));
+        }
+
         this.curve = new THREE.CatmullRomCurve3(points);
-        let shape = new THREE.Shape(points);
+        let shape = new THREE.Shape(ellipse.getPoints(100));
 
         let settings = {
             depth: this.cylinderHeight,
@@ -66,26 +70,50 @@ class Cilindrosfera extends THREE.Object3D {
 
     createGui(gui, titleGui) {
         this.guiControls = new function() {
-            this.radius = 5;
+            this.xRadius = 5;
+            this.yRadius = 5;
 
             this.reset = function() {
-                this.radius = 5;
+                this.xRadius = 5;
+                this.yRadius = 5;
             }
         }
 
         var folder = gui.addFolder(titleGui);
-        folder.add(this.guiControls, 'radius', 5, 20, 1).name('Radio del cilindro').listen();
+        folder.add(this.guiControls, 'xRadius', 5, 20, 1).name('Radio X').listen();
+        folder.add(this.guiControls, 'yRadius', 5, 20, 1).name('Radio Y').listen();
         folder.add(this.guiControls, 'reset').name('[ Reset ]');
     }
 
     // Actualizar el radio de rotación con el del cilindro
     updateRadius() {
-        // Actualizar rotación de la esfera
-        this.sphere.position.z = this.guiControls.radius;
+        // Actualizar radios
+        this.xRadius = this.guiControls.xRadius;
+        this.yRadius = this.guiControls.yRadius;
 
-        // Actualizar radio del cilindro
-        this.cylinderRadius = this.guiControls.radius;
-        //this.cyl.geometry = new THREE.CylinderBufferGeometry(this.cylinderRadius, this.cylinderRadius, this.cylinderHeight, 32);
+        // Rehacer geometrías y curvas
+        let ellipse = new THREE.EllipseCurve(0, 0, this.xRadius, this.yRadius);
+
+        let points = [];
+        for(let p of ellipse.getPoints(100)) {
+            points.push(new THREE.Vector3(p.x, 0, p.y));
+        }
+
+        this.curve = new THREE.CatmullRomCurve3(points);
+        let shape = new THREE.Shape(ellipse.getPoints(100));
+
+        let settings = {
+            depth: this.cylinderHeight,
+            bevelEnabled: false,
+        }
+
+        let cylG = new THREE.ExtrudeBufferGeometry(shape, settings);
+        cylG.translate(0, 0,-this.cylinderHeight/2);
+        cylG.rotateX(-Math.PI/2);
+        this.cyl.geometry = cylG;
+
+        let lineGeom = new THREE.BufferGeometry().setFromPoints(points);
+        this.line.geometry = lineGeom;
     }
 
     // Animación del satélite: rotación
@@ -107,12 +135,10 @@ class Cilindrosfera extends THREE.Object3D {
     }
 
     update() {
-        /*
         // Si se ha cambiado el radio, actualizar
-        if(this.guiControls.radius != this.cylinderRadius) {
+        if(this.guiControls.xRadius != this.xRadius || this.guiControls.yRadius != this.yRadius) {
             this.updateRadius();
         }
-        */
 
         this.animate();
     }
