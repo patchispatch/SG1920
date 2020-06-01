@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title>PARRIBA</title>
+    <meta charset="utf-8">
+
+    <!-- BIBLIOTECAS -->
+    <script type="text/javascript" src="lib/three.js"></script>
+    <script type="text/javascript" src="lib/jquery.js"></script>
+    <script type="text/javascript" src="lib/dat.gui.js"></script>
+    <script type="text/javascript" src="lib/Octree.js"></script>
+    
+    <!-- CÓDIGO FUENTE -->
+    <script type="text/javascript" src="src/Game.js"></script>
+
+    <style>
+        body{
+            margin: 0;
+            overflow: hidden; 
+        }
+    </style>
+</head>
+<body>
+
+<!-- Div which will show statistical information -->
+<div id="Stats-output">
+</div>
+
+<!-- Div which will show several messages -->
+<div style="position:absolute; left:100px; top:10px" id="Messages">
+</div>
+
+<!-- Div which will hold the Output -->
+<div id="WebGL-output">
+</div>
+</body>
+</html>
