@@ -27,6 +27,8 @@ class Game extends THREE.Scene {
         this.ambientLight = null;
         this.spotLight = null;
 
+        this.gameElements = [];
+
         // Creación de cámara
         this.createCamera();
 
@@ -38,6 +40,9 @@ class Game extends THREE.Scene {
 
         // Elementos básicos de la escena
         this.createBasicElements();
+
+        // Elementos del nivel
+        this.populateLevel();
         
         // Luces
         this.createLights();
@@ -60,7 +65,7 @@ class Game extends THREE.Scene {
      * Crea y posiciona una cámara y la añade al grafo
      */
     createCamera() {
-        let viewport = 16;
+        let viewport = 2;
         this.camera = new THREE.OrthographicCamera(
             window.innerWidth / - viewport, 
             window.innerWidth / viewport, 
@@ -92,11 +97,25 @@ class Game extends THREE.Scene {
      * Crea los elementos básicos del juego (paredes, decoración, etc.)
      */
     createBasicElements() {
-        // Un cubo de prueba
-        let cGeom = new THREE.SphereGeometry(5, 32, 32);
-        let cMat = new THREE.MeshPhongMaterial({color: 0x333333});
-        this.cube = new THREE.Mesh(cGeom, cMat);
-        this.add(this.cube);
+        // Suelo
+        let floorG = new THREE.BoxGeometry(window.innerWidth, 250, 10);
+        floorG.translate(0, -(window.innerHeight / 2) + 5, 0);
+        let floorM = new THREE.MeshPhongMaterial({color: 0x3322DD});
+        this.floor = new THREE.Mesh(floorG, floorM);
+
+        this.add(this.floor);
+    }
+
+    /**
+     * Crea el nivel con sus elementos y objetivos
+     */
+    populateLevel() {
+        this.gameElements.push(new FreeBall(-75, 0));
+        this.gameElements.push(new FreeBall(75, 0));
+
+        for(let element of this.gameElements) {
+            this.add(element);
+        }
     }
 
     /**
@@ -109,7 +128,8 @@ class Game extends THREE.Scene {
 
         // Luz focal tras la cámara
         this.spotLight = new THREE.SpotLight( 0xFFFFFF, 0.45);
-        this.spotLight.position.set(0, 0, -50);
+        this.spotLight.position.set(0, 0, -500);
+        this.spotLight.angle = Math.PI/2;
         this.spotLight.castShadow = true;
 
         // Resolución de las sombras
@@ -144,7 +164,7 @@ class Game extends THREE.Scene {
         this.renderer.render(this, this.getCamera());
 
         // Actualización de luces
-        this.helper.update();
+        // ...
 
         // Actualización de objetos de la escena
         // ...
