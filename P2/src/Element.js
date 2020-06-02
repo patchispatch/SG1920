@@ -17,6 +17,18 @@ class Element extends THREE.Object3D {
      */
     constructor() {
         super();
+
+        this.geometry = null;
+        this.material = null;
+        this.mesh = null;
+    }
+
+    /**
+     * Devuelve el Mesh del elemento
+     * @returns Mesh del objeto
+     */
+    getMesh() {
+        return this.mesh;
     }
 
     /**

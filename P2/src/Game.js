@@ -20,14 +20,14 @@ class Game extends THREE.Scene {
         // Atributos del juego
         this.renderer = this.createRenderer(myCanvas);
         this.gameState = Game.IDLE;
+        this.gameElements = [];
+        this.selectedObject = null;
         
         this.octree = null;
         this.gui = null;
         this.camera = null;
         this.ambientLight = null;
         this.spotLight = null;
-
-        this.gameElements = [];
 
         // Creación de cámara
         this.createCamera();
@@ -36,7 +36,7 @@ class Game extends THREE.Scene {
         // this.createGUI();
 
         // Creación de Octree
-        // createOctree();
+        this.createOctree();
 
         // Elementos básicos de la escena
         this.createBasicElements();
@@ -90,7 +90,12 @@ class Game extends THREE.Scene {
      * Crea y establece la configuración del Octree
      */
     createOctree() {
-        throw new Error("TO DO");
+        this.octree = new THREE.Octree({
+            undeferred: false,
+            depthMax: Infinity,
+            objectsThreshold: 4,
+            overlapPct: 0.2,
+        });
     }
 
     /**
@@ -115,6 +120,7 @@ class Game extends THREE.Scene {
 
         for(let element of this.gameElements) {
             this.add(element);
+            this.octree.add(element.getMesh(), {useFaces: true});
         }
     }
 
@@ -155,6 +161,38 @@ class Game extends THREE.Scene {
     }
 
     /**
+     * Se ejecuta cuando se mueve el ratón
+     * @param {MouseEvent} event Evento del ratón
+     */
+    onMouseMove(event) {
+        let mouse = new THREE.Vector2();
+        mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        mouse.y = 1 - 2 * (event.clientY / window.innerHeight);
+
+        let raycaster = new THREE.Raycaster();
+        raycaster.setFromCamera(mouse, this.camera);
+
+        let octreeObjects = this.octree.search(
+            raycaster.ray.origin,
+            raycaster.ray.far,
+            true,
+            raycaster.ray.direction
+        );
+
+        let intersections = raycaster.intersectOctreeObjects(octreeObjects);
+
+        if(intersections.length > 0) {
+            this.selectedObject = intersections[0].object;
+            this.selectedObject.userData.onPick();
+        }
+        else if(this.selectedObject !== null) {
+            // Deseleccionar
+            this.selectedObject.userData.onDrop();
+            this.selectedObject = null;
+        }
+    }
+
+    /**
      * Actualiza el estado del juego cada frame
      */
     update() {
@@ -162,12 +200,17 @@ class Game extends THREE.Scene {
 
         // Renderizar la escena
         this.renderer.render(this, this.getCamera());
+        
+        // Actualización del Octree
+        this.octree.update();
 
         // Actualización de luces
         // ...
 
         // Actualización de objetos de la escena
-        // ...
+        for(let element of this.gameElements) {
+            element.update();
+        }
     }
 
 
@@ -187,7 +230,7 @@ $(function() {
     let game = new Game("#WebGL-output");
 
     // Listeners
-    // ...
+    window.addEventListener("mousemove", (event) => game.onMouseMove(event));
 
     // Primera visualización
     game.update();

@@ -22,6 +22,7 @@ class FreeBall extends Ball {
         this.status = FreeBall.IDLE;
         this.material = new THREE.MeshPhongMaterial({color: 0x333333});
         this.mesh = new THREE.Mesh(this.geometry, this.material);
+        this.mesh.userData = this;
         
         // Posición
         this.mesh.position.x = x;
@@ -30,8 +31,39 @@ class FreeBall extends Ball {
         this.add(this.mesh);
     }
 
+    /**
+     * Comportamiento de la FreeBall al ser seleccionada
+     */
+    onPick() {
+        // Cambiar el estado
+        this.status = FreeBall.SELECTED;
+    }
+
+    /**
+     * Comportamiento de la FreeBall al ser deseleccionada
+     */
+    onDrop() {
+        this.status = FreeBall.DROPPED;
+    }
+
+    /**
+     * Actualiza la FreeBall cada frame
+     */
     update() {
-        // ...
+        if(this.status == FreeBall.IDLE) {
+            // Hacer cosas
+        }
+        else if(this.status == FreeBall.SELECTED) {
+            // Cambiar material
+            this.mesh.material = new THREE.MeshPhongMaterial({color: 0xFF33CC});
+        }
+        else if(this.status == FreeBall.DROPPED) {
+            // Reestablecer material
+            this.mesh.material = this.material;
+
+            // Volver a estado IDLE
+            this.status = FreeBall.IDLE;
+        }
     }
 }
 
