@@ -266,16 +266,16 @@ class Game extends THREE.Scene {
             unionObjects = this.octree.search(this.selectedObject.getPosition(), 150);
 
             // Guardar TowerBall cercanas
-            let tbs = [];
+            let tbs = new Set();
             for(let tb of unionObjects) {
                 if(tb.object.userData instanceof TowerBall) {
-                    tbs.push(tb.object.userData);
+                    tbs.add(tb.object.userData);
                 }
             }
 
             // Eliminar líneas inactivas
             for(let l of this.lines) {
-                if(!tbs.includes(l.target)) {
+                if(!tbs.has(l.target)) {
                     this.remove(l.line);
                     this.lines.splice(this.lines.indexOf(l), 1);
                 }
@@ -283,8 +283,9 @@ class Game extends THREE.Scene {
             
             // Posibles uniones con Tower
             // Si hay TowerBall 
-            if(tbs.length > 0) {
+            if(tbs.size > 1) {
                 // Cambiar estado de FreeBall
+                console.log(tbs.length);
                 this.selectedObject.onDetection();
 
                 for(let tb of tbs) {
@@ -311,7 +312,7 @@ class Game extends THREE.Scene {
                     this.add(l.line);
                 }
             }
-            else if(tbs.length <= 0 && this.selectedObject.getStatus() == FreeBall.POSSIBLE_UNION) {
+            else if(tbs.size <= 1 && this.selectedObject.getStatus() == FreeBall.POSSIBLE_UNION) {
                 this.selectedObject.onPick();
             }
         }
