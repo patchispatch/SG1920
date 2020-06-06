@@ -20,7 +20,7 @@ class FreeBall extends Ball {
 
         // Propiedades de FreeBall
         this.status = FreeBall.IDLE;
-        this.material = new THREE.MeshPhongMaterial({color: 0x08183A});
+        this.material = new THREE.MeshToonMaterial({color: 0xEAF2E3});
         this.mesh = new THREE.Mesh(this.geometry, this.material);
         this.mesh.userData = this;
         
@@ -97,15 +97,15 @@ class FreeBall extends Ball {
         }
         else if(this.status == FreeBall.HOVER) {
             // Cambiar material
-            this.mesh.material = new THREE.MeshPhongMaterial({color: 0x737373});
+            this.mesh.material = new THREE.MeshToonMaterial({color: 0x2B2D42});
         }
         else if(this.status == FreeBall.SELECTED) {
             // Cambiar material
-            this.mesh.material = new THREE.MeshPhongMaterial({color: 0xFD5E53});
+            this.mesh.material = new THREE.MeshToonMaterial({color: 0x00D9C0});
         }
         else if (this.status == FreeBall.POSSIBLE_UNION) {
             // Cambiar material
-            this.mesh.material = new THREE.MeshPhongMaterial({color: 0xFC9C54});
+            this.mesh.material = new THREE.MeshToonMaterial({color: 0xFF4365});
         }
         else if(this.status == FreeBall.DROPPED) {
             // Reestablecer material

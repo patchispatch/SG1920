@@ -18,7 +18,7 @@ class Ball extends Element {
         super();
 
         // Propiedades
-        this.radius = 50;
+        this.radius = 25;
         this.geometry = new THREE.SphereGeometry(this.radius, 32, 32);
     }
 }

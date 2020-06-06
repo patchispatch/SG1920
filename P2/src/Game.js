@@ -23,6 +23,10 @@ class Game extends THREE.Scene {
         this.gameElements = [];
         this.tower = [];
         this.goal = null;
+
+        // Rebobinado
+        this.lastMoveElements = [];
+        this.undo = false;
         
         this.octree = null;
         this.gui = null;
@@ -32,11 +36,14 @@ class Game extends THREE.Scene {
         this.mouse = null;
 
         // Elementos auxiliares
-        this.lineMaterial = new THREE.LineBasicMaterial({color: 0xFFE373});
+        this.lineMaterial = new THREE.LineBasicMaterial({color: 0xFF4365});
         this.lines = [];
 
         // Creación de cámara
         this.createCamera();
+
+        // Audio
+        this.createAudio();
 
         // Creación de GUI
         // this.createGUI();
@@ -86,6 +93,27 @@ class Game extends THREE.Scene {
     }
 
     /**
+     * Crea el audio del juego
+     */
+    createAudio() {
+        // create an AudioListener and add it to the camera
+        let listener = new THREE.AudioListener();
+        this.camera.add(listener);
+
+        // create a global audio source
+        let sound = new THREE.Audio(listener);
+
+        // load a sound and set it as the Audio object's buffer
+        let audioLoader = new THREE.AudioLoader();
+        audioLoader.load( 'assets/music.mp3', function(buffer) {
+            sound.setBuffer( buffer );
+            sound.setLoop( true );
+            sound.setVolume( 0.5 );
+            sound.play();
+        });
+    }
+
+    /**
      * Crea el fondo del juego
      * @param {string} image Imagen de fondo
      */
@@ -121,7 +149,7 @@ class Game extends THREE.Scene {
         // Suelo
         let floorG = new THREE.BoxGeometry(window.innerWidth, 250, 10);
         floorG.translate(0, -(window.innerHeight / 2) + 5, 0);
-        let floorM = new THREE.MeshPhongMaterial({color: 0x3322DD});
+        let floorM = new THREE.MeshToonMaterial({color: 0x3322DD});
         this.floor = new THREE.Mesh(floorG, floorM);
 
         this.add(this.floor);
@@ -133,8 +161,8 @@ class Game extends THREE.Scene {
     populateLevel() {
         // Bolas del nivel
         let x = -750;
-        let y = -250;
-        let increment = 150;
+        let y = -300;
+        let increment = 100;
 
         for(let i = 0; i < 4; ++i) {
             this.gameElements.push(new FreeBall(x, y));
@@ -143,10 +171,10 @@ class Game extends THREE.Scene {
         }
 
         // Estructura inicial
-        let b1 = new TowerBall(750, -100);
-        let b2 = new TowerBall(750, -250);
-        let b3 = new TowerBall(600, -100);
-        let b4 = new TowerBall(600, -250);
+        let b1 = new TowerBall(750, -150);
+        let b2 = new TowerBall(750, -300);
+        let b3 = new TowerBall(600, -150);
+        let b4 = new TowerBall(600, -300);
 
         this.createStick(b1.getPosition(), b2.getPosition());
         this.createStick(b2.getPosition(), b3.getPosition());
@@ -434,6 +462,22 @@ class Game extends THREE.Scene {
             else if(tbs.size <= 1 && this.selectedObject.getStatus() == FreeBall.POSSIBLE_UNION) {
                 this.selectedObject.onPick();
             }
+        }
+    }
+
+    /**
+     * Deshace el último movimiento si fuese posible
+     */
+    undo() {
+        if(this.undo) {
+            // Eliminar de la torre y de la escena
+            for(let element of this.lastMoveElements) {
+                this.tower.splice(this.tower.indexOf(element), 1);
+                this.remove(element);
+            }
+        }
+        else {
+
         }
     }
 
