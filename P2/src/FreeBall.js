@@ -20,13 +20,9 @@ class FreeBall extends Ball {
 
         // Propiedades de FreeBall
         this.status = FreeBall.IDLE;
-        this.material = new THREE.MeshPhongMaterial({color: 0x333333});
+        this.material = new THREE.MeshPhongMaterial({color: 0x08183A});
         this.mesh = new THREE.Mesh(this.geometry, this.material);
         this.mesh.userData = this;
-
-        // Propiedades de líneas
-        this.lineMaterial = new THREE.LineBasicMaterial({color: 0xFF4D4D});
-        this.lines = [];
         
         // Posición
         this.mesh.position.x = x;
@@ -85,6 +81,13 @@ class FreeBall extends Ball {
         this.status = FreeBall.POSSIBLE_UNION;
     }
 
+    inside(point) {
+        let distance = (point.x - this.mesh.position.x) * (point.x - this.mesh.position.x) +
+                       (point.y - this.mesh.position.y) * (point.y - this.mesh.position.y);
+
+        return distance < (this.radius + 1200 * this.radius + 1200);
+    }
+
     /**
      * Actualiza la FreeBall cada frame
      */
@@ -98,11 +101,11 @@ class FreeBall extends Ball {
         }
         else if(this.status == FreeBall.SELECTED) {
             // Cambiar material
-            this.mesh.material = new THREE.MeshPhongMaterial({color: 0xFF33CC});
+            this.mesh.material = new THREE.MeshPhongMaterial({color: 0xFD5E53});
         }
         else if (this.status == FreeBall.POSSIBLE_UNION) {
             // Cambiar material
-            this.mesh.material = new THREE.MeshPhongMaterial({color: 0x22DDCC});
+            this.mesh.material = new THREE.MeshPhongMaterial({color: 0xFC9C54});
         }
         else if(this.status == FreeBall.DROPPED) {
             // Reestablecer material

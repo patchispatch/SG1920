@@ -19,7 +19,7 @@ class Stick extends Element {
         super();
 
         // Propiedades de Stick
-        this.material = new THREE.MeshPhongMaterial({color: 0xCCCCCC});
+        this.material = new THREE.MeshPhongMaterial({color: 0x4B3D60});
 
         let s3 = new THREE.Vector3(start.x, start.y, 0);
         let e3 = new THREE.Vector3(end.x, end.y, 0);

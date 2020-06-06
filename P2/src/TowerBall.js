@@ -19,7 +19,7 @@ class TowerBall extends Ball {
         super();
 
         // Propiedades de TowerBall
-        this.material = new THREE.MeshPhongMaterial({color: 0xCCCCCC});
+        this.material = new THREE.MeshPhongMaterial({color: 0x4B3D60});
         this.mesh = new THREE.Mesh(this.geometry, this.material);
         this.mesh.userData = this;
 

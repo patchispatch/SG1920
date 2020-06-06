@@ -32,7 +32,7 @@ class Game extends THREE.Scene {
         this.mouse = null;
 
         // Elementos auxiliares
-        this.lineMaterial = new THREE.LineBasicMaterial({color: 0xFF0000});
+        this.lineMaterial = new THREE.LineBasicMaterial({color: 0xFFE373});
         this.lines = [];
 
         // Creación de cámara
@@ -45,10 +45,10 @@ class Game extends THREE.Scene {
         this.createOctree();
 
         // Elementos básicos de la escena
-        this.createBasicElements();
+        // this.createBasicElements();
 
         // Elementos del nivel
-        this.populateLevel();
+        this.loadLevel();
         
         // Luces
         this.createLights();
@@ -83,6 +83,16 @@ class Game extends THREE.Scene {
         this.camera.position.set(0,0,200);
         let look = new THREE.Vector3(0,0,0);
         this.camera.lookAt(look);
+    }
+
+    /**
+     * Crea el fondo del juego
+     * @param {string} image Imagen de fondo
+     */
+    createBackground(image) {
+        const loader = new THREE.TextureLoader();
+        const texture = loader.load(image);
+        this.background = texture;
     }
 
     /**
@@ -194,7 +204,14 @@ class Game extends THREE.Scene {
      * @param {String} level El nivel a cargar
      */
     loadLevel() {
-        throw new Error("TO DO");
+        // Interpretar JSON
+        // ...
+
+        // Cargar nivel
+        this.populateLevel();
+
+        // Cargar fondo
+        this.createBackground("assets/background.jpg");
     }
 
     /**
@@ -371,7 +388,7 @@ class Game extends THREE.Scene {
             
             let tbs = new Set();
             for(let tb of unionObjects) {
-                if(tb.object.userData instanceof TowerBall) {
+                if(tb.object.userData instanceof TowerBall && this.selectedObject.inside(tb.object.userData.getPosition())) {
                     tbs.add(tb.object.userData);
                 }
             }
@@ -437,15 +454,13 @@ class Game extends THREE.Scene {
         this.createOctree();
 
         // Crear elementos básicos
-        this.createBasicElements();
+        // this.createBasicElements();
 
         // Reiniciar el nivel
         this.populateLevel();
 
         // Crear luces
         this.createLights();
-        
-       // location.reload();
     }
 
     /**

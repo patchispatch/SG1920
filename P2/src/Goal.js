@@ -17,7 +17,7 @@ class Goal extends Element {
         this.radius = 100;
         this.geometry = new THREE.SphereGeometry(this.radius, 32, 32);
         this.material = new THREE.MeshPhongMaterial({
-            color: 0xDDD25A,
+            color: 0xFFE373,
             transparent: true,
             opacity: 0.5,
         });
