@@ -22,12 +22,14 @@ class Game extends THREE.Scene {
         this.status = Game.IDLE;
         this.gameElements = [];
         this.tower = [];
+        this.goal = null;
         
         this.octree = null;
         this.gui = null;
         this.camera = null;
         this.ambientLight = null;
         this.spotLight = null;
+        this.mouse = null;
 
         // Elementos auxiliares
         this.lineMaterial = new THREE.LineBasicMaterial({color: 0xFF0000});
@@ -160,6 +162,11 @@ class Game extends THREE.Scene {
             this.add(element);
             this.octree.add(element.getMesh(), {useFaces: true});
         }
+
+        // Añadir meta
+        this.goal = new Goal(0, 250, this);
+        this.octree.add(this.goal.getMesh(), {useFaces: true});
+        this.add(this.goal);
     }
 
     /**
@@ -230,9 +237,9 @@ class Game extends THREE.Scene {
         rayMouse.y = 1 - 2 * (event.clientY / window.innerHeight);
 
         // Ratón serializado para coordenadas THREE
-        let mouse = new THREE.Vector2();
-        mouse.x = event.clientX - window.innerWidth/2;
-        mouse.y = window.innerHeight/2 - event.clientY;
+        this.mouse = new THREE.Vector2();
+        this.mouse.x = event.clientX - window.innerWidth/2;
+        this.mouse.y = window.innerHeight/2 - event.clientY;
 
         let raycaster = new THREE.Raycaster();
         raycaster.setFromCamera(rayMouse, this.camera);
@@ -245,7 +252,6 @@ class Game extends THREE.Scene {
         );
 
         let intersections = raycaster.intersectOctreeObjects(octreeObjects);
-        let unionObjects = null;
 
         // Si no hay ninguna bola seleccionada y hay una coincidencia, se selecciona
         // STATUS CAMBIA A Game.BALL_SELECTED
@@ -260,61 +266,6 @@ class Game extends THREE.Scene {
             this.selectedObject.onLeave();
             this.selectedObject = null;
             this.status = Game.IDLE;
-        }
-        else if(this.status == Game.BALL_PICKED) {
-            this.selectedObject.move(mouse.x, mouse.y);
-            unionObjects = this.octree.search(this.selectedObject.getPosition(), 150);
-
-            // Guardar TowerBall cercanas
-            let tbs = new Set();
-            for(let tb of unionObjects) {
-                if(tb.object.userData instanceof TowerBall) {
-                    tbs.add(tb.object.userData);
-                }
-            }
-
-            // Eliminar líneas inactivas
-            for(let l of this.lines) {
-                if(!tbs.has(l.target)) {
-                    this.remove(l.line);
-                    this.lines.splice(this.lines.indexOf(l), 1);
-                }
-            }
-            
-            // Posibles uniones con Tower
-            // Si hay TowerBall 
-            if(tbs.size > 1) {
-                // Cambiar estado de FreeBall
-                console.log(tbs.length);
-                this.selectedObject.onDetection();
-
-                for(let tb of tbs) {
-                    // Si existe una línea, se actualiza su geometría
-                    let l = this.lines.find(line => line.target == tb);
-                    if(l !== undefined) {
-                        l.line.geometry = this.newLineGeometry(this.selectedObject.getPosition(), tb.getPosition());
-                        l.line.verticesNeedUpdate = true;
-                    }
-                    // Si no, se crea una nueva línea
-                    else {
-                        this.lines.push({
-                            target: tb,
-                            line: this.newLine( 
-                                this.selectedObject.getPosition(),
-                                tb.getPosition()
-                            )
-                        });
-                    }
-                }
-
-                // Actualizar líneas
-                for(let l of this.lines) {
-                    this.add(l.line);
-                }
-            }
-            else if(tbs.size <= 1 && this.selectedObject.getStatus() == FreeBall.POSSIBLE_UNION) {
-                this.selectedObject.onPick();
-            }
         }
     }
 
@@ -400,9 +351,102 @@ class Game extends THREE.Scene {
      * Define la lógica del juego según los diferentes estados posibles
      */
     gameLogic() {
-        throw new Error("Hay que mover la lógica aquí");
+        // Condición de victoria
+        let search = this.octree.search(this.goal.getPosition(), this.goal.getRadius());
+        // Fase gruesa
+        if(search.length > 0) {
+            if(search.some((element) => element.object.userData instanceof TowerBall && this.goal.inside(element.object.userData.getPosition()))) {
+                alert("¡Has ganado!");
+                this.restart();
+            }
+        }
+
+        // BALL_PICKED
+        if(this.status == Game.BALL_PICKED) {
+            // Mover el ratón
+            this.selectedObject.move(this.mouse.x, this.mouse.y);
+
+            // Detectar uniones
+            let unionObjects = this.octree.search(this.selectedObject.getPosition(), 150);
+            
+            let tbs = new Set();
+            for(let tb of unionObjects) {
+                if(tb.object.userData instanceof TowerBall) {
+                    tbs.add(tb.object.userData);
+                }
+            }
+
+            // Eliminar líneas inactivas
+            for(let l of this.lines) {
+                if(!tbs.has(l.target)) {
+                    this.remove(l.line);
+                    this.lines.splice(this.lines.indexOf(l), 1);
+                }
+            }
+
+            // Posibles uniones con Tower
+            // Si hay TowerBall 
+            if(tbs.size > 1) {
+                // Cambiar estado de FreeBall
+                this.selectedObject.onDetection();
+
+                for(let tb of tbs) {
+                    // Si existe una línea, se actualiza su geometría
+                    let l = this.lines.find(line => line.target == tb);
+                    if(l !== undefined) {
+                        l.line.geometry = this.newLineGeometry(this.selectedObject.getPosition(), tb.getPosition());
+                        l.line.verticesNeedUpdate = true;
+                    }
+                    // Si no, se crea una nueva línea
+                    else {
+                        this.lines.push({
+                            target: tb,
+                            line: this.newLine( 
+                                this.selectedObject.getPosition(),
+                                tb.getPosition()
+                            )
+                        });
+                    }
+                }
+
+                // Actualizar líneas
+                for(let l of this.lines) {
+                    this.add(l.line);
+                }
+            }
+            else if(tbs.size <= 1 && this.selectedObject.getStatus() == FreeBall.POSSIBLE_UNION) {
+                this.selectedObject.onPick();
+            }
+        }
     }
 
+    /**
+     * Finaliza el juego y lo reestablece
+     */
+    restart() {
+        
+        // Vacía la escena
+        while(this.children.length > 0){ 
+            this.remove(this.children[0]); 
+        }
+
+        // Vacía las estructuras de datos
+        this.gameElements = [];
+        this.tower = [];
+        this.status = Game.IDLE;
+        this.createOctree();
+
+        // Crear elementos básicos
+        this.createBasicElements();
+
+        // Reiniciar el nivel
+        this.populateLevel();
+
+        // Crear luces
+        this.createLights();
+        
+       // location.reload();
+    }
 
     /**
      * Actualiza el estado del juego cada frame
@@ -417,7 +461,7 @@ class Game extends THREE.Scene {
         this.octree.update();
 
         // Lógica del juego
-        // this.gameLogic();
+        this.gameLogic();
 
         // Actualización de objetos de la escena
         for(let element of this.gameElements) {

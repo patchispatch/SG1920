@@ -38,4 +38,12 @@ class Element extends THREE.Object3D {
     update() {
         throw new Error("To implement in subclass");
     }
+
+    /**
+     * Devuelve la posición del elemento
+     * @returns {THREE.Vector2} Posición del elemento
+     */
+    getPosition() {
+        return new THREE.Vector2(this.mesh.position.x, this.mesh.position.y);
+    }
 }
