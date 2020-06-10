@@ -4,6 +4,11 @@
 
 // Game.js
 // Escena principal del juego, en la que se gestiona su estado y elementos
+var level = 0;
+
+function setLevel(l) {
+    level = l;
+}
 
 /**
  * Clase principal del juego
@@ -18,7 +23,7 @@ class Game extends THREE.Scene {
         super();
 
         // Atributos del juego
-        this.status = Game.IDLE;
+        this.status = Game.MENU;
         this.gameElements = [];
         this.tower = [];
         this.goal = null;
@@ -32,34 +37,19 @@ class Game extends THREE.Scene {
         this.ambientLight = null;
         this.spotLight = null;
         this.mouse = null;
-
-        // Elementos auxiliares
-        this.lineMaterial = new THREE.LineBasicMaterial({color: 0xFF4365});
-        this.lines = [];
+        this.sound = null;
 
         // Creación de cámara
         this.createCamera();
 
-        // Audio
         this.createAudio();
-
-        // Creación de GUI
-        // this.createGUI();
-
-        // Creación de Octree
-        this.createOctree();
-
-        // Elementos básicos de la escena
-        // this.createBasicElements();
-
-        // Elementos del nivel
-        this.loadLevel();
-        
-        // Luces
-        this.createLights();
 
         // Compositor
         this.composer = this.createComposer(myCanvas);
+
+        // Elementos auxiliares
+        this.lineMaterial = new THREE.LineBasicMaterial({color: 0xFF4365});
+        this.lines = [];
     }
 
     /**
@@ -92,7 +82,6 @@ class Game extends THREE.Scene {
         return composer;
     }
 
-
     /**
      * Crea y posiciona una cámara y la añade al grafo
      */
@@ -120,16 +109,7 @@ class Game extends THREE.Scene {
         this.camera.add(listener);
 
         // create a global audio source
-        let sound = new THREE.Audio(listener);
-
-        // load a sound and set it as the Audio object's buffer
-        let audioLoader = new THREE.AudioLoader();
-        audioLoader.load( 'assets/music.mp3', function(buffer) {
-            sound.setBuffer( buffer );
-            sound.setLoop( true );
-            sound.setVolume( 0.5 );
-            sound.play();
-        });
+        this.sound = new THREE.Audio(listener);
     }
 
     /**
@@ -140,13 +120,6 @@ class Game extends THREE.Scene {
         const loader = new THREE.TextureLoader();
         const texture = loader.load(image);
         this.background = texture;
-    }
-
-    /**
-     * Crea la GUI
-     */
-    createGUI() {
-        throw new Error("TO DO");
     }
 
     /**
@@ -164,20 +137,95 @@ class Game extends THREE.Scene {
     /**
      * Crea los elementos básicos del juego (paredes, decoración, etc.)
      */
-    createBasicElements() {
-        // Suelo
-        let floorG = new THREE.BoxGeometry(window.innerWidth, 250, 10);
-        floorG.translate(0, -(window.innerHeight / 2) + 5, 0);
-        let floorM = new THREE.MeshToonMaterial({color: 0x3322DD});
-        this.floor = new THREE.Mesh(floorG, floorM);
+    createLevel() {
+        // Audio
+        this.createAudio();
 
-        this.add(this.floor);
+        // Creación de Octree
+        this.createOctree();
+        
+        // Luces
+        this.createLights();
     }
 
     /**
-     * Crea el nivel con sus elementos y objetivos
+     * Carga el menú
      */
-    populateLevel() {
+    loadMenu() {
+        this.status = Game.MENU;
+        level = 0;
+        document.getElementById("WebGL-output").style.display = "none";
+        document.getElementById("menu").style.display = "block";
+    }
+
+    /**
+     * Crea el nivel 1 con sus elementos y objetivos
+     */
+    populateLevel1() {
+        // Bolas del nivel
+        let x = -750;
+        let y = -300;
+        let increment = 100;
+
+        for(let i = 0; i < 6; ++i) {
+            this.gameElements.push(new FreeBall(x, y));
+            this.gameElements.push(new FreeBall(x + increment, y));
+            y += increment;
+        }
+
+        // Estructura inicial
+        let b1 = new TowerBall(750, -150);
+        let b2 = new TowerBall(750, -300);
+        let b3 = new TowerBall(600, -150);
+        let b4 = new TowerBall(600, -300);
+
+        this.createStick(b1.getPosition(), b2.getPosition());
+        this.createStick(b2.getPosition(), b3.getPosition());
+        this.createStick(b3.getPosition(), b4.getPosition());
+        this.createStick(b4.getPosition(), b1.getPosition());
+        this.createStick(b1.getPosition(), b3.getPosition());
+        this.createStick(b2.getPosition(), b4.getPosition());
+
+        this.tower.push(b1);
+        this.tower.push(b2);
+        this.tower.push(b3);
+        this.tower.push(b4);
+
+
+        // Añadir FreeBalls
+        for(let element of this.gameElements) {
+            this.add(element);
+            this.octree.add(element.getMesh(), {useFaces: true});
+        }
+
+        // Añadir torre
+        for(let element of this.tower) {
+            this.add(element);
+            this.octree.add(element.getMesh(), {useFaces: true});
+        }
+
+        // Añadir meta
+        this.goal = new Goal(0, 250, this);
+        this.octree.add(this.goal.getMesh(), {useFaces: true});
+        this.add(this.goal);
+
+        // load a sound and set it as the Audio object's buffer
+        let audioLoader = new THREE.AudioLoader();
+        audioLoader.load( 'assets/music.mp3', (buffer) => {
+            this.sound.setBuffer( buffer );
+            this.sound.setLoop( true );
+            this.sound.setVolume( 0.5 );
+            this.sound.play();
+        });
+
+        // Cargar fondo
+        this.createBackground("assets/level1.jpg");
+    }
+
+    /**
+     * Crea el nivel 2 con sus elementos y objetivos
+     */
+    populateLevel2() {
         // Bolas del nivel
         let x = -750;
         let y = -300;
@@ -224,7 +272,84 @@ class Game extends THREE.Scene {
         this.goal = new Goal(0, 250, this);
         this.octree.add(this.goal.getMesh(), {useFaces: true});
         this.add(this.goal);
+
+        // load a sound and set it as the Audio object's buffer
+        let audioLoader = new THREE.AudioLoader();
+        audioLoader.load( 'assets/funnybunny.mp3', (buffer) => {
+            this.sound.setBuffer( buffer );
+            this.sound.setLoop( true );
+            this.sound.setVolume( 0.5 );
+            this.sound.play();
+        });
+                
+        // Cargar fondo
+        this.createBackground("assets/level2.jpg");
     }
+
+    /**
+     * Crea el nivel 3 con sus elementos y objetivos
+     */
+    populateLevel3() {
+        // Bolas del nivel
+        let x = -750;
+        let y = -300;
+        let increment = 100;
+
+        for(let i = 0; i < 5; ++i) {
+            this.gameElements.push(new FreeBall(x, y));
+            this.gameElements.push(new FreeBall(x + increment, y));
+            y += increment;
+        }
+
+        // Estructura inicial
+        let b1 = new TowerBall(750, -150);
+        let b2 = new TowerBall(750, -300);
+        let b3 = new TowerBall(600, -150);
+        let b4 = new TowerBall(600, -300);
+
+        this.createStick(b1.getPosition(), b2.getPosition());
+        this.createStick(b2.getPosition(), b3.getPosition());
+        this.createStick(b3.getPosition(), b4.getPosition());
+        this.createStick(b4.getPosition(), b1.getPosition());
+        this.createStick(b1.getPosition(), b3.getPosition());
+        this.createStick(b2.getPosition(), b4.getPosition());
+
+        this.tower.push(b1);
+        this.tower.push(b2);
+        this.tower.push(b3);
+        this.tower.push(b4);
+
+
+        // Añadir FreeBalls
+        for(let element of this.gameElements) {
+            this.add(element);
+            this.octree.add(element.getMesh(), {useFaces: true});
+        }
+
+        // Añadir torre
+        for(let element of this.tower) {
+            this.add(element);
+            this.octree.add(element.getMesh(), {useFaces: true});
+        }
+
+        // Añadir meta
+        this.goal = new Goal(-100, 250, this);
+        this.octree.add(this.goal.getMesh(), {useFaces: true});
+        this.add(this.goal);
+
+        // load a sound and set it as the Audio object's buffer
+        let audioLoader = new THREE.AudioLoader();
+        audioLoader.load( 'assets/bakamitai.mp3', (buffer) => {
+            this.sound.setBuffer( buffer );
+            this.sound.setLoop( true );
+            this.sound.setVolume( 0.5 );
+            this.sound.play();
+        });
+
+        // Cargar fondo
+        this.createBackground("assets/level3.jpg");
+    }
+
 
     /**
      * Crea las luces necesarias y las añade al grafo
@@ -248,17 +373,28 @@ class Game extends THREE.Scene {
 
     /**
      * Carga el nivel indicado
-     * @param {String} level El nivel a cargar
+     * @param {Number} level El nivel a cargar
      */
-    loadLevel() {
-        // Interpretar JSON
-        // ...
+    loadLevel(n) {
+        this.createLevel();
 
-        // Cargar nivel
-        this.populateLevel();
+        if(n == 1) {
+            this.populateLevel1();
+        }
+        else if(n == 2) {
+            this.populateLevel2();
+        }
+        else if(n == 3) {
+            this.populateLevel3();
+        }
 
         // Cargar fondo
-        this.createBackground("assets/background.jpg");
+        // this.createBackground("assets/background.jpg");
+
+        // Ocultar menú y mostrar juego
+        document.getElementById("WebGL-output").style.display = "block";
+        document.getElementById("menu").style.display = "none";
+        this.status = Game.IDLE;
     }
 
     /**
@@ -295,41 +431,43 @@ class Game extends THREE.Scene {
      * @param {MouseEvent} event Evento del ratón
      */
     onMouseMove(event) {
-        // Ratón serializado para raycaster
-        let rayMouse = new THREE.Vector2();
-        rayMouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-        rayMouse.y = 1 - 2 * (event.clientY / window.innerHeight);
+        if(this.status != Game.MENU) {
+            // Ratón serializado para raycaster
+            let rayMouse = new THREE.Vector2();
+            rayMouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            rayMouse.y = 1 - 2 * (event.clientY / window.innerHeight);
 
-        // Ratón serializado para coordenadas THREE
-        this.mouse = new THREE.Vector2();
-        this.mouse.x = event.clientX - window.innerWidth/2;
-        this.mouse.y = window.innerHeight/2 - event.clientY;
+            // Ratón serializado para coordenadas THREE
+            this.mouse = new THREE.Vector2();
+            this.mouse.x = event.clientX - window.innerWidth/2;
+            this.mouse.y = window.innerHeight/2 - event.clientY;
 
-        let raycaster = new THREE.Raycaster();
-        raycaster.setFromCamera(rayMouse, this.camera);
+            let raycaster = new THREE.Raycaster();
+            raycaster.setFromCamera(rayMouse, this.camera);
 
-        let octreeObjects = this.octree.search(
-            raycaster.ray.origin,
-            raycaster.ray.far,
-            true,
-            raycaster.ray.direction
-        );
+            let octreeObjects = this.octree.search(
+                raycaster.ray.origin,
+                raycaster.ray.far,
+                true,
+                raycaster.ray.direction
+            );
 
-        let intersections = raycaster.intersectOctreeObjects(octreeObjects);
-
-        // Si no hay ninguna bola seleccionada y hay una coincidencia, se selecciona
-        // STATUS CAMBIA A Game.BALL_SELECTED
-        if(this.status == Game.IDLE && intersections.length > 0 && intersections[0].object.userData instanceof FreeBall) {
-            this.selectedObject = intersections[0].object.userData;
-            this.selectedObject.onHover();
-            this.status = Game.BALL_SELECTED;
+            let intersections = raycaster.intersectOctreeObjects(octreeObjects);
+        
+            // Si no hay ninguna bola seleccionada y hay una coincidencia, se selecciona
+            // STATUS CAMBIA A Game.BALL_SELECTED
+            if(this.status == Game.IDLE && intersections.length > 0 && intersections[0].object.userData instanceof FreeBall) {
+                this.selectedObject = intersections[0].object.userData;
+                this.selectedObject.onHover();
+                this.status = Game.BALL_SELECTED;
+            }
+            // Si hay una bola seleccionada y no hay coincidencias, se abandona
+            // STATUS CAMBIA A Game.IDLE
+            else if(this.status == Game.BALL_SELECTED && intersections.length <= 0) {
+                this.selectedObject.onLeave();
+                this.selectedObject = null;
+                this.status = Game.IDLE;
         }
-        // Si hay una bola seleccionada y no hay coincidencias, se abandona
-        // STATUS CAMBIA A Game.IDLE
-        else if(this.status == Game.BALL_SELECTED && intersections.length <= 0) {
-            this.selectedObject.onLeave();
-            this.selectedObject = null;
-            this.status = Game.IDLE;
         }
     }
 
@@ -556,14 +694,20 @@ class Game extends THREE.Scene {
         this.status = Game.IDLE;
         this.createOctree();
 
-        // Crear elementos básicos
-        // this.createBasicElements();
+        // Parar música
+        this.sound.stop();
 
         // Reiniciar el nivel
-        this.populateLevel();
+        this.loadMenu();
+
+        let audioLoader = new THREE.AudioLoader();
+        audioLoader.load( 'assets/music.mp3', (buffer) => {
+            this.sound.setBuffer( buffer );
+            this.sound.stop();
+        });
 
         // Crear luces
-        this.createLights();
+        // this.createLights();
     }
 
     /**
@@ -571,20 +715,26 @@ class Game extends THREE.Scene {
      */
     update() {
         requestAnimationFrame(() => this.update());
+        if(this.status == Game.MENU) {
+            if(level != 0) {
+                this.loadLevel(level);
+            }
+        }
+        else {
+            // Renderizar la escena
+            // this.renderer.render(this, this.getCamera());
+            this.composer.render();
+            
+            // Actualización del Octree
+            this.octree.update();
 
-        // Renderizar la escena
-        // this.renderer.render(this, this.getCamera());
-        this.composer.render();
-        
-        // Actualización del Octree
-        this.octree.update();
+            // Lógica del juego
+            this.gameLogic();
 
-        // Lógica del juego
-        this.gameLogic();
-
-        // Actualización de objetos de la escena
-        for(let element of this.gameElements) {
-            element.update();
+            // Actualización de objetos de la escena
+            for(let element of this.gameElements) {
+                element.update();
+            }
         }
     }
 }
@@ -594,7 +744,7 @@ Game.IDLE = 0;
 Game.BALL_SELECTED = 1;
 Game.BALL_PICKED = 2
 Game.POSSIBLE_UNION = 3;
-Game.UNION = 4;
+Game.MENU = 4;
 
 /**
  * Función principal

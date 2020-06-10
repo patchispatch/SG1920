@@ -12,15 +12,12 @@
     <script type="text/javascript" src="lib/dat.gui.js"></script>
     <script type="text/javascript" src="lib/Octree.js"></script>
     <script type="module" src="lib/MathUtils.js"></script>
-    
 
     <!-- EFECTOS -->
     <script type="text/javascript" src="effects/EffectComposer.js"></script>
     <script type="text/javascript" src="effects/RenderPass.js"></script>
-    <script type="text/javascript" src="effects/GlitchPass.js"></script>
     <script type="text/javascript" src="effects/CopyShader.js"></script>
     <script type="text/javascript" src="effects/ShaderPass.js"></script>
-    <script type="text/javascript" src="effects/DigitalGlitch.js"></script>
     
     <!-- CÓDIGO FUENTE -->
     <script type="text/javascript" src="src/Element.js"></script>
@@ -31,10 +28,35 @@
     <script type="text/javascript" src="src/Goal.js"></script>
     <script type="text/javascript" src="src/Game.js"></script>
 
+    <link href="https://fonts.googleapis.com/css2?family=Monoton&display=swap" rel="stylesheet"> 
+
     <style>
         body{
             margin: 0;
             overflow: hidden; 
+            background-color: gainsboro;
+        }
+
+        #menu {
+            display: block;
+            cursor: pointer;
+            font-family: Monoton;
+            text-align: center;
+            padding: 70px;
+        }
+
+        #menu h1 {
+            color: crimson;
+            font-size: 120px;
+        }
+
+        #menu h3 {
+            color: cornflowerblue;
+            font-size: 50px;
+        }
+
+        #WebGL-output {
+            display: none;
         }
     </style>
 </head>
@@ -42,6 +64,14 @@
 
 <!-- Div which will show statistical information -->
 <div id="Stats-output">
+</div>
+
+<!-- MENÚ -->
+<div id="menu">
+    <h1>PARRIBA</h1>
+    <a onclick=setLevel(1)><h3>Nivel 1</h3></a>
+    <a onclick=setLevel(2)><h3>Nivel 2</h3></a>
+    <a onclick=setLevel(3)><h3>Nivel 3</h3></a>
 </div>
 
 <!-- Div which will show several messages -->
