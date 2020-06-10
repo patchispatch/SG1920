@@ -14,8 +14,9 @@ class TowerBall extends Ball {
      * @constructor
      * @param {number} x Coordenada X de la TowerBall
      * @param {number} y Coordenada Y de la TowerBall
+     * @param {THREE.Vector2} originalPos posición original, si la hubiera
      */
-    constructor(x, y) {
+    constructor(x, y, originalPos = undefined) {
         super();
 
         // Propiedades de TowerBall
@@ -26,6 +27,12 @@ class TowerBall extends Ball {
         // Posición
         this.mesh.position.x = x;
         this.mesh.position.y = y;
+
+        // Posición original de la antigua FreeBall
+        if(originalPos !== undefined) {
+            this.originalX = originalPos.x;
+            this.originalY = originalPos.y;
+        }
 
         this.add(this.mesh);
     }

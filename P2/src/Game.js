@@ -25,7 +25,6 @@ class Game extends THREE.Scene {
 
         // Rebobinado
         this.lastMoveElements = [];
-        this.undo = false;
         
         this.octree = null;
         this.gui = null;
@@ -385,15 +384,20 @@ class Game extends THREE.Scene {
      * Añade una FreeBall a la torre
      */
     joinTower() {
+        // Hacer los últimos cambios permanentes
+        this.lastMoveElements = [];
+
         // Crear TowerBall
-        let tb = new TowerBall(this.selectedObject.getPosition().x, this.selectedObject.getPosition().y);
+        let tb = new TowerBall(this.selectedObject.getPosition().x, this.selectedObject.getPosition().y, this.selectedObject.getOriginalPosition());
         this.tower.push(tb);
         this.octree.add(tb.mesh, {useFaces: true});
         this.add(tb);
+        this.lastMoveElements.push(tb);
 
         // Crear palos
         for(let l of this.lines) {
-            this.createStick(this.selectedObject.getPosition(), l.target.getPosition());
+            let s = this.createStick(this.selectedObject.getPosition(), l.target.getPosition());
+            this.lastMoveElements.push(s);
         }
 
         // Eliminar FreeBall
@@ -410,6 +414,8 @@ class Game extends THREE.Scene {
         this.tower.push(stick);
         this.octree.add(stick);
         this.add(stick);
+
+        return stick;
     }
 
     /**
@@ -495,17 +501,38 @@ class Game extends THREE.Scene {
      * Deshace el último movimiento si fuese posible
      */
     undo() {
-        if(this.undo) {
-            // Eliminar de la torre y de la escena
-            for(let element of this.lastMoveElements) {
-                this.tower.splice(this.tower.indexOf(element), 1);
-                this.remove(element);
+        let originalPos = null;
+        // Eliminar de la torre y de la escena
+        for(let element of this.lastMoveElements) {
+            this.tower.splice(this.tower.indexOf(element), 1);
+            this.remove(element);
+            this.octree.remove(element.getMesh());
+
+            if(element instanceof TowerBall) {
+                originalPos = element.getOriginalPosition();
             }
         }
-        else {
 
+        // Crear FreeBall de nuevo en su posición original
+        let fb = new FreeBall(originalPos.x, originalPos.y);
+        this.gameElements.push(fb);
+        this.octree.add(fb.getMesh());
+        this.add(fb);
+
+        this.lastMoveElements = [];
+    }
+
+
+    /**
+     * Se ejecuta al presionar una tecla
+     * @param {KeyboardEvent} event Evento de teclado
+     */
+    onKeyDown(event) {
+        if(event.key == 'u') {
+            this.undo();
         }
     }
+
 
     /**
      * Finaliza el juego y lo reestablece
@@ -574,6 +601,8 @@ $(function() {
     window.addEventListener("mousemove", (event) => game.onMouseMove(event));
     window.addEventListener("mousedown", (event) => game.onMouseDown(event));
     window.addEventListener("mouseup", (event) => game.onMouseUp(event));
+    window.addEventListener("keydown", (event) => game.onKeyDown(event));
+
 
     // Primera visualización
     game.update();
