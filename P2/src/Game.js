@@ -501,25 +501,31 @@ class Game extends THREE.Scene {
      * Deshace el último movimiento si fuese posible
      */
     undo() {
-        let originalPos = null;
-        // Eliminar de la torre y de la escena
-        for(let element of this.lastMoveElements) {
-            this.tower.splice(this.tower.indexOf(element), 1);
-            this.remove(element);
-            this.octree.remove(element.getMesh());
-
-            if(element instanceof TowerBall) {
-                originalPos = element.getOriginalPosition();
+        if(this.lastMoveElements.length > 0) {
+            let originalPos = null;
+            // Eliminar de la torre y de la escena
+            for(let element of this.lastMoveElements) {
+                this.tower.splice(this.tower.indexOf(element), 1);
+                this.remove(element);
+                this.octree.remove(element.getMesh());
+    
+                if(element instanceof TowerBall) {
+                    originalPos = element.getOriginalPosition();
+                }
             }
+    
+            // Crear FreeBall de nuevo en su posición original
+            let fb = new FreeBall(originalPos.x, originalPos.y);
+            this.gameElements.push(fb);
+            this.octree.add(fb.getMesh());
+            this.add(fb);
+    
+            this.lastMoveElements = [];
+        }
+        else {
+            alert("No se puede deshacer en este momento.");
         }
 
-        // Crear FreeBall de nuevo en su posición original
-        let fb = new FreeBall(originalPos.x, originalPos.y);
-        this.gameElements.push(fb);
-        this.octree.add(fb.getMesh());
-        this.add(fb);
-
-        this.lastMoveElements = [];
     }
 
 
