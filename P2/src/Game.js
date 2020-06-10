@@ -18,7 +18,6 @@ class Game extends THREE.Scene {
         super();
 
         // Atributos del juego
-        this.renderer = this.createRenderer(myCanvas);
         this.status = Game.IDLE;
         this.gameElements = [];
         this.tower = [];
@@ -59,6 +58,9 @@ class Game extends THREE.Scene {
         
         // Luces
         this.createLights();
+
+        // Compositor
+        this.composer = this.createComposer(myCanvas);
     }
 
     /**
@@ -73,6 +75,24 @@ class Game extends THREE.Scene {
         $(canvas).append(renderer.domElement);    
         return renderer;
     }
+
+    /**
+     * Crea el compositor de la escena
+     * @param {HTMLCanvasElement} canvas Canvas HTML
+     * @returns compositor de la escena
+     */ 
+    createComposer(myCanvas) {
+        let renderer = this.createRenderer(myCanvas);
+        let composer = new THREE.EffectComposer(renderer);
+
+        // Passes
+        let renderPass = new THREE.RenderPass(this, this.getCamera());
+        renderPass.renderToScreen = true;
+        composer.addPass(renderPass);
+
+        return composer;
+    }
+
 
     /**
      * Crea y posiciona una cámara y la añade al grafo
@@ -367,7 +387,7 @@ class Game extends THREE.Scene {
     joinTower() {
         // Crear TowerBall
         let tb = new TowerBall(this.selectedObject.getPosition().x, this.selectedObject.getPosition().y);
-        this.gameElements.push(tb);
+        this.tower.push(tb);
         this.octree.add(tb.mesh, {useFaces: true});
         this.add(tb);
 
@@ -399,11 +419,17 @@ class Game extends THREE.Scene {
         // Condición de victoria
         let search = this.octree.search(this.goal.getPosition(), this.goal.getRadius());
         // Fase gruesa
-        if(search.length > 0) {
-            if(search.some((element) => element.object.userData instanceof TowerBall && this.goal.inside(element.object.userData.getPosition()))) {
-                alert("¡Has ganado!");
-                this.restart();
-            }
+        if((search.length > 0) &&
+            search.some((element) => element.object.userData instanceof TowerBall && 
+            this.goal.inside(element.object.userData.getPosition()))) 
+        {
+            alert("¡Has ganado!");
+            this.restart();
+        }
+        // Condición de derrota
+        else if(this.gameElements.length == 0) {
+            alert("Has perdido.");
+            this.restart();
         }
 
         // BALL_PICKED
@@ -514,7 +540,8 @@ class Game extends THREE.Scene {
         requestAnimationFrame(() => this.update());
 
         // Renderizar la escena
-        this.renderer.render(this, this.getCamera());
+        // this.renderer.render(this, this.getCamera());
+        this.composer.render();
         
         // Actualización del Octree
         this.octree.update();
@@ -527,8 +554,6 @@ class Game extends THREE.Scene {
             element.update();
         }
     }
-
-
 }
 
 // Estados del juego
