@@ -28,7 +28,7 @@
     <script type="text/javascript" src="src/Goal.js"></script>
     <script type="text/javascript" src="src/Game.js"></script>
 
-    <link href="https://fonts.googleapis.com/css2?family=Monoton&display=swap" rel="stylesheet"> 
+    <link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@700&display=swap" rel="stylesheet"> 
 
     <style>
         body{
@@ -40,7 +40,7 @@
         #menu {
             display: block;
             cursor: pointer;
-            font-family: Monoton;
+            font-family: 'Zilla Slab', serif;
             text-align: center;
             padding: 70px;
         }
@@ -57,6 +57,16 @@
 
         #WebGL-output {
             display: none;
+        }
+
+        #Messages {
+            position:absolute; 
+            left:100px; 
+            top:10px;
+            margin: 10px;
+            font-family: 'Zilla Slab', serif;
+            font-size: 30px;
+            color: grey;
         }
     </style>
 </head>
@@ -75,7 +85,7 @@
 </div>
 
 <!-- Div which will show several messages -->
-<div style="position:absolute; left:100px; top:10px" id="Messages">
+<div id="Messages">
 </div>
 
 <!-- Div which will hold the Output -->

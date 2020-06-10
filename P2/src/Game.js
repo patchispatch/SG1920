@@ -532,6 +532,9 @@ class Game extends THREE.Scene {
         this.add(tb);
         this.lastMoveElements.push(tb);
 
+        // Informar de posible rebobinado
+        document.getElementById('Messages').innerHTML = 'Pulsa  U  para  rebobinar';
+
         // Crear palos
         for(let l of this.lines) {
             let s = this.createStick(this.selectedObject.getPosition(), l.target.getPosition());
@@ -659,11 +662,13 @@ class Game extends THREE.Scene {
             this.add(fb);
     
             this.lastMoveElements = [];
+
+            // Eliminar posible rebobinado
+            document.getElementById('Messages').innerHTML = "";
         }
         else {
             alert("No se puede deshacer en este momento.");
         }
-
     }
 
 
@@ -699,15 +704,15 @@ class Game extends THREE.Scene {
 
         // Reiniciar el nivel
         this.loadMenu();
+        
+        // Eliminar posible rebobinado
+        document.getElementById('Messages').innerHTML = "";
 
         let audioLoader = new THREE.AudioLoader();
         audioLoader.load( 'assets/music.mp3', (buffer) => {
             this.sound.setBuffer( buffer );
             this.sound.stop();
         });
-
-        // Crear luces
-        // this.createLights();
     }
 
     /**
